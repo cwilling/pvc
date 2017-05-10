@@ -52,6 +52,9 @@ switch (this.type) {
     case 'sourceforge':
       sourceforge_functions.check(this, options);
       break;
+    case 'pypi':
+      pypi_functions.check(this, options);
+      break;
     case 'libreoffice':
       libreoffice_functions.check(this, options);
       break;
