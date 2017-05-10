@@ -1,15 +1,6 @@
 const https = require('https');
 const common = require('./pvcCommon.js');
 
-var config = {
-  "github":{
-    "username":"chris.willing@linux.com",
-    "token":"0d0256bd8fe3240c10406d8814f4a89bcb84311c",
-  },
-  "sourceforge":{
-  }
-}
-
 var check = function (parent, options) {
   var action = options.action || 'check';
   //console.log("check() for project " + parent.project);
