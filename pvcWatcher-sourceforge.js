@@ -3,6 +3,7 @@ const common = require('./pvcCommon.js');
 
 var check = function (parent, options) {
   var action = options.action || 'check';
+  var config = options.config || null;
   //console.log("check() for project " + parent.project);
 
   // https request
@@ -19,7 +20,8 @@ var check = function (parent, options) {
     port: 443,
     path: '/' + reqpath
   };
-  if (config.sourceforge.auth) {
+  // Don't know what a sourceforge auth looks like ...
+  if (config.sourceforge && config.sourceforge.auth) {
     requestOptions.headers['Authorization'] = config.sourceforge.auth;
   }
   //console.log("Request: " + requestOptions.path);
