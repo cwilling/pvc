@@ -2,7 +2,7 @@ const https = require('https');
 const fs = require("fs");
 
 // Load plugins
-var retrievalTypes = [];
+pvcRetrievalTypes = []; // Global
 var watcherFunctions = {};
 function checkName(name) {
     var moduleType = "";
@@ -10,7 +10,7 @@ function checkName(name) {
     if (name.match(/pvcWatcher-\S*.js/)) {
         require("./" + name);
         moduleType = name.replace(/^pvcWatcher-|.js$/g,"");
-        retrievalTypes.push(moduleType);
+        pvcRetrievalTypes.push(moduleType);
         watcherFunctions["moduleType"] = moduleType + "_functions";
 	//console.log("Module: " + moduleType);
         return true;
@@ -20,8 +20,7 @@ function checkName(name) {
 }
 var pluginPath = "./";
 fs.readdirSync(pluginPath).filter(checkName);
-console.log("retrievalTypes = " + retrievalTypes);
-//console.log("watcherFunctions = " + watcherFunctions.github);
+//console.log("pvcRetrievalTypes = " + pvcRetrievalTypes);
 
 
 function Watcher () {
@@ -60,7 +59,7 @@ switch (this.type) {
       break;
     default:
       console.log("Can't check unknown retrieval type (" + this.type + ")");
-      console.log("Must be from " + retrievalTypes);
+      console.log("Must be from " + pvcRetrievalTypes);
       break;
   } /* switch */
 }

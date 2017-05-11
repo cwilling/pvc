@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const Watcher = require("./pvcWatcher.js");
+const Watcher = require("./pvcWatcher");
 const events = require('events');
 const fs = require('fs')
 const os = require('os');
@@ -136,7 +136,7 @@ function loadWatchList () {
 
 
 function pvcLoadConfiguration () {
-  console.log("Loading saved configuration");
+  //console.log("Loading saved configuration");
   fs.readFile(pvcConfigFile, "utf8", function (err, data) {
     //console.log("Open file: " + pvcConfigDir);
     if (err) {
@@ -148,7 +148,7 @@ function pvcLoadConfiguration () {
       eventEmitter.emit("config_ready", {});
       return;
     }
-    console.log("pvcLoadConfiguration");
+    //console.log("pvcLoadConfiguration");
     var obj = JSON.parse(data)
     eventEmitter.emit("config_ready", obj);
   });
@@ -334,8 +334,13 @@ function parseCommand () {
           if ( ret < 0 ) {
             ret = siteList.indexOf("--show");
             if ( ret < 0 ) {
-              console.log("Need a command-type (--add, --delete or --show) to continue \"config\" command");
-              process.exit(1);
+              // Missing option for config command => show pertinent pvc information
+              //console.log("PVC - Project Version Checker \u00A9Copyright 2017 Christoph Willing");
+              console.log("PVC - Project Version Checker");
+              console.log("       watched projects file: " + pvcWatchListFile);
+              console.log("     user configuration file: " + pvcConfigFile);
+              console.log("   available retrieval types: " + pvcRetrievalTypes);
+              process.exit(0);
             } else {
               configType = "show";
             }
