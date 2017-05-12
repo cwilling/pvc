@@ -111,6 +111,17 @@ fs.mkdir(pvcLocalDir, function (err) {
   pvcLoadConfiguration();
 });
 
+function usage () {
+  console.log("Usage:");
+  console.log("      pvc list");
+  console.log("      pvc show   [ --project projectname ]");
+  console.log("      pvc check  [ --project projectname ]");
+  console.log("      pvc update < --project projectname >");
+  console.log("      pvc add    < --project projectname --type repotype --urlbase urlbase >");
+  console.log("      pvc delete < --project projectname >");
+  console.log("      pvc config [ --add item | --delete item | --show [item] ]");
+}
+
 function loadWatchList () {
   fs.readFile(pvcWatchListFile, "utf8", function (err, data) {
     //console.log("Open file: " + pvcWatchListFile);
@@ -168,9 +179,8 @@ function pvcSaveConfiguration (config) {
 
 function parseCommand () {
   if ( myArgs.length == 0 ) {
-    // No arguments => "check all"
-    console.log("Default: check all");
-    action = "check";
+    usage();
+    process.exit(0);
   } else {
     action = myArgs[0];
   }
