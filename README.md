@@ -32,7 +32,7 @@ The current contents of the watch list may be viewed at any time using the *list
     
 The *check* command compares locally recorded version numbers with the latest upstream release versions. The upstream repository of each nominated project is queried for the latest version number and displayed alongside the locally recorded version numer. If the version numbers are the same, pvc displays something like:
 
-    ./pvc check --project pvc
+    pvc check --project pvc
     Project pvc  = 0.1.1
 
 If the version number has changed, pvc displays something like:
@@ -54,7 +54,7 @@ where the first field of the --add argument indicates that github is the reposit
 
 After adding such authorisation with the *config* command, pvc will use it for all access to the github repository.
 
-If pvc is run without any command, the command summary, as below, is shown.
+If pvc is run without any command, an abbreviated version of the following command summary is shown.
 
 #### Command summary
 PVC requires a command and possibly, depending on the command, command related option arguments i.e.
