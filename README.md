@@ -54,9 +54,13 @@ where the first field of the --add argument indicates that github is the reposit
 
 After adding such authorisation with the *config* command, pvc will use it for all access to the github repository.
 
+If pvc is run without any command, the command summary, as below, is shown.
 
-### Command summary
-- pvc [ command ]
+#### Command summary
+PVC requires a command and possibly, depending on the command, command related option arguments i.e.
+- pvc < command [ command options ] >
+
+In particular:
 - pvc list
 - pvc show   [ --project projectname ]
 - pvc check  [ --project projectname ]
@@ -64,3 +68,5 @@ After adding such authorisation with the *config* command, pvc will use it for a
 - pvc add    < --project projectname --type repotype --urlbase urlbase >
 - pvc delete < --project projectname >
 - pvc config [ --add item | --delete item | --show [item] ]
+
+where a *config* item consists of a repo type field, optionally followed by further comma separated fields containing key:value pairs.
