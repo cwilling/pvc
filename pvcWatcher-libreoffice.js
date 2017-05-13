@@ -28,7 +28,8 @@ var check = function (parent, options) {
       res_data = res_data.split(/\r?\n/);
       //console.log(res_data);
 
-      var tarballName = '';
+      var tarballName;
+      var version;
       for(var i in res_data) {
           //console.log(":::: " + res_data[i]);
           var lomatch = res_data[i].replace(/\?/,"   ").match(/libreoffice-[0-9].*\.tar\.[a-z]*/);
@@ -40,13 +41,15 @@ var check = function (parent, options) {
             break;
           }
       }
+      if (tarballName ) {
+        version = tarballName.replace(/^[^0-9]*|[^0-9]*$/g, "");
+      }
 
       switch (action) {
         case 'update':
           if ( ! tarballName ) {
             eventEmitter.emit('UpdateWatcher', parent, void 0);
           } else {
-            var version = tarballName.replace(/^[^0-9]*|[^0-9]*$/g, "");
             eventEmitter.emit('UpdateWatcher', parent, version);
           }
           break;
@@ -55,7 +58,6 @@ var check = function (parent, options) {
             console.log("ERROR! tarball download not found in " + res_data);
             eventEmitter.emit('NotValidWatcher', parent);
           } else {
-            var version = tarballName.replace(/^[^0-9]*|[^0-9]*$/g, "");
             if ( version != parent.version ) {
               console.log("NOTE: latest version is " + version);
               parent.version = version;
@@ -68,7 +70,6 @@ var check = function (parent, options) {
           if ( ! tarballName ) {
             eventEmitter.emit('CheckedWatcher', parent, void 0);
           } else {
-            var version = tarballName.replace(/^[^0-9]*|[^0-9]*$/g, "");
             eventEmitter.emit('CheckedWatcher', parent, version)
           }
           break;

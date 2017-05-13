@@ -33,20 +33,23 @@ var check = function (parent, options) {
           res_data += chunk;
         });
         response.on('end', function() {
+          var versions = [];
           //console.log(res_data);
           var page_data = JSON.parse(res_data);
+          if (page_data) {
+            // Remove non-numeric leading characters before sorting
+            for (var i=0;i<page_data.length;i++) {
+              //console.log(page_data[i].name);
+              versions.push(page_data[i].name.replace(/^[^0-9]*|-.*$/g, ""));
+            }
+            versions.sort( function(a,b) { return naturalCompare(b, a); });
+          }
+
           switch (action) {
             case 'update':
               if (page_data == undefined) {
                 eventEmitter.emit('UpdateWatcher', parent, void 0);
               } else {
-                // Remove non-numeric leading characters before sorting
-                var versions = [];
-                for (var i=0;i<page_data.length;i++) {
-                  //console.log(page_data[i].name);
-                  versions.push(page_data[i].name.replace(/^[^0-9]*/, ""));
-                }
-                versions.sort( function(a,b) { return naturalCompare(b, a); });
                 eventEmitter.emit('UpdateWatcher', parent, versions[0]);
               }
               break
@@ -55,13 +58,6 @@ var check = function (parent, options) {
                 console.log("ERROR! Request returned: " + res_data);
                 eventEmitter.emit('NotValidWatcher', parent);
               } else {
-                // Remove non-numeric leading characters before sorting
-                var versions = [];
-                for (var i=0;i<page_data.length;i++) {
-                  //console.log(page_data[i].name);
-                  versions.push(page_data[i].name.replace(/^[^0-9]*/, ""));
-                }
-                versions.sort( function(a,b) { return naturalCompare(b, a); });
                 //console.log(versions);
                 if (versions[0] != parent.version) {
                   console.log("NOTE: latest version is " + versions[0]);
@@ -75,13 +71,6 @@ var check = function (parent, options) {
               if (page_data == undefined) {
                 eventEmitter.emit('CheckedWatcher', parent, void 0);
               } else {
-                // Remove non-numeric leading characters before sorting
-                var versions = [];
-                for (var i=0;i<page_data.length;i++) {
-                  //console.log(page_data[i].name);
-                  versions.push(page_data[i].name.replace(/^[^0-9]*/, ""));
-                }
-                versions.sort( function(a,b) { return naturalCompare(b, a); });
                 eventEmitter.emit('CheckedWatcher', parent, versions[0]);
               }
               break;

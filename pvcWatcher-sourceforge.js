@@ -36,8 +36,8 @@ var check = function (parent, options) {
       res_data = res_data.split(/\r?\n/);
       //console.log(res_data);
 
-      var files = '';
-      var files_found = false;
+      var files;
+      var versions = [];
       for(var i in res_data) {
           if (res_data[i].search("net.sf.files") > 0) {
               //console.log(res_data[i]);
@@ -45,40 +45,31 @@ var check = function (parent, options) {
               var end = res_data[i].indexOf(';');
               //console.log(res_data[i].slice(start, end));
               files = JSON.parse(res_data[i].slice(start, end));
-              files_found = true;
               break;
           }
       }
+      if ( files) {
+        var rawVersions = Object.keys(files);
+        //console.log("Raw versions: " + rawVersions);
+        for (var i=0;i<rawVersions.length;i++ ) {
+          versions.push(rawVersions[i].replace(/^[^0-9]*/, ""));
+        }
+        //console.log("Stripped versions: " + versions);
+        versions.sort( function(a,b) { return naturalCompare(b, a); });
+      }
       switch (action) {
         case 'update':
-          if ( ! files_found ) {
+          if ( ! files ) {
             eventEmitter.emit('UpdateWatcher', parent, void 0);
           } else {
-            var versions = [];
-            var rawVersions = Object.keys(files);
-            //console.log("Raw versions: " + rawVersions);
-            for (var i=0;i<rawVersions.length;i++ ) {
-              versions.push(rawVersions[i].replace(/^[^0-9]*/, ""));
-            }
-            //console.log("Stripped versions: " + versions);
-            versions.sort( function(a,b) { return naturalCompare(b, a); });
             eventEmitter.emit('UpdateWatcher', parent, versions[0]);
           }
           break;
         case 'validate':
-          if ( ! files_found ) {
+          if ( ! files ) {
             console.log("ERROR! net.sf.files not found in " + res_data);
             eventEmitter.emit('NotValidWatcher', parent);
           } else {
-            var versions = [];
-            var rawVersions = Object.keys(files);
-            //console.log("Raw versions: " + rawVersions);
-            for (var i=0;i<rawVersions.length;i++ ) {
-              versions.push(rawVersions[i].replace(/^[^0-9]*/, ""));
-            }
-            //console.log("Stripped versions: " + versions);
-            versions.sort( function(a,b) { return naturalCompare(b, a); });
-            //console.log("Sorted versions: " + versions);
             if ( versions[0] != parent.version ) {
               console.log("NOTE: latest version is " + versions[0]);
               parent.version = versions[0];
@@ -88,17 +79,9 @@ var check = function (parent, options) {
           break;
         case 'check':
         default:
-          if ( ! files_found ) {
+          if ( ! files ) {
             eventEmitter.emit('CheckedWatcher', parent, void 0);
           } else {
-            var versions = [];
-            var rawVersions = Object.keys(files);
-            //console.log("Raw versions: " + rawVersions);
-            for (var i=0;i<rawVersions.length;i++ ) {
-              versions.push(rawVersions[i].replace(/^[^0-9]*/, ""));
-            }
-            //console.log("Stripped versions: " + versions);
-            versions.sort( function(a,b) { return naturalCompare(b, a); });
             eventEmitter.emit('CheckedWatcher', parent, versions[0])
           }
           break;
@@ -116,7 +99,6 @@ var check = function (parent, options) {
 sourceforge_functions = {
   "check":check,
 };
-//  "isValid":isValid,
 
 
 /* ex:set ai shiftwidth=2 inputtab=spaces smarttab noautotab: */
