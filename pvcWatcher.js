@@ -57,6 +57,9 @@ switch (this.type) {
     case 'libreoffice':
       libreoffice_functions.check(this, options);
       break;
+    case 'vtk':
+      vtk_functions.check(this, options);
+      break;
     default:
       console.log("Can't check unknown retrieval type (" + this.type + ")");
       console.log("Must be from " + pvcRetrievalTypes);
