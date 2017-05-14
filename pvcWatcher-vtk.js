@@ -15,7 +15,7 @@ var check = function (parent, options) {
       'User-Agent': 'pvc: Project Version Checker'
     },
     host: 'www.vtk.org',
-    path: '/' + parent.urlbase + '/'
+    path: '/download/'
   };
 
   console.log("Request: " + requestOptions.path);
