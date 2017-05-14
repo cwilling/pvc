@@ -57,6 +57,9 @@ switch (this.type) {
     case 'libreoffice':
       libreoffice_functions.check(this, options);
       break;
+    case 'hackage':
+      hackage_functions.check(this, options);
+      break;
     case 'vtk':
       vtk_functions.check(this, options);
       break;
