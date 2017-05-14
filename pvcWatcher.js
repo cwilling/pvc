@@ -60,6 +60,9 @@ switch (this.type) {
     case 'hackage':
       hackage_functions.check(this, options);
       break;
+    case 'live555':
+      live555_functions.check(this, options);
+      break;
     case 'suitesparse':
       suitesparse_functions.check(this, options);
       break;
