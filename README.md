@@ -6,15 +6,17 @@ A project of interest is added to the watch list using pvc's *add* command; remo
   - the project name is chosen arbitrarily by the user but is likely to reflect the actual project name.
   - the repo type is any of the supported repository types which currently are *github*, *sourceforge*, *pypi*, *hackage*, *vtk* and *libreoffice*. PVC is designed to enable additional types to be added fairly painlessly.
   - the form of the url base required by the *add* command depends on the repo type:
-    - github form is *owner/project* e.g. cwilling/pvc
-    - sourceforge form is *project/(sub)project* e.g. qwt/qwt or libvncserver/x11vnc
-    - pypi form is simply *project* e.g. Cython
+    - github form is *owner/project name* e.g. cwilling/pvc
+    - sourceforge form is *project name/(sub)project name* e.g. qwt/qwt or libvncserver/x11vnc
+    - pypi form is simply the *project name* e.g. Cython
+    - hackage form is also the *project name*
     - libreoffice form is just the release category e.g. libreoffice-fresh or libreoffice-still
 
 Examples of *add* command usage for the different repo types are:
   - pvc add --project pvc --type github --urlbase cwilling/pvc
   - pvc add --project x11vnc --type sourceforge --urlbase libvncserver/x11vnc
   - pvc add --project cython --type pypi --urlbase Cython
+  - pvc add --project hscolour --type hackage --urlbase hscolor
   - pvc add --project LibreOffice --type libreoffice --urlbase libreoffice-fresh
 
 As the *add* command runs, it interrogates the remote repository for the project's latest version number which is recorded for later reference as well as being displayed at the command line. If the version number displayed is *undefined*, it indicates a failure of the *add* command.
