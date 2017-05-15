@@ -14,6 +14,7 @@ A project of interest is added to the watch list using pvc's *add* command; remo
     - live555 form is the *project name* i.e. live555
     - suitesparse form is the *project name* i.e. suitesparse
     - vtk form is the *project name* i.e. vtk
+    - zpaq form is the *project name* i.e. zpaq
 
 Examples of *add* command usage for the different repo types are:
   - pvc add --project pvc --type github --urlbase cwilling/pvc
@@ -24,6 +25,7 @@ Examples of *add* command usage for the different repo types are:
   - pvc add --project live555 --type live555 --urlbase live555
   - pvc add --project suitesparse --type suitesparse --urlbase suitesparse
   - pvc add --project vtk --type vtk --urlbase vtk
+  - pvc add --project zpaq --type zpaq --urlbase zpaq
 
 As the *add* command runs, it interrogates the remote repository for the project's latest version number which is recorded for later reference as well as being displayed at the command line. If the version number displayed is *undefined*, it indicates a failure of the *add* command.
 

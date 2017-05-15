@@ -69,6 +69,9 @@ switch (this.type) {
     case 'vtk':
       vtk_functions.check(this, options);
       break;
+    case 'zpaq':
+      zpaq_functions.check(this, options);
+      break;
     default:
       console.log("Can't check unknown retrieval type (" + this.type + ")");
       console.log("Must be from " + pvcRetrievalTypes);
