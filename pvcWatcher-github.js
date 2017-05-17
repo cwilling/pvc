@@ -50,12 +50,6 @@ function requestIterator (options, requestOptions, callback) {
 
   function report(newVersions, nextUrl) {
 
-    //if ( "path" in nextUrl) {
-    //  console.log("nextUrl = " + JSON.stringify(nextUrl) + "  " + nextUrl.length);
-    //} else {
-    //  console.log("nextUrl = no path");
-    //}
-
     newVersions.forEach( function (item, index) {
       //console.log("Adding version: " + item);
       options.versions.push(item);
@@ -64,18 +58,18 @@ function requestIterator (options, requestOptions, callback) {
       // update header with latest path
       requestOptions.host = nextUrl.host;
       requestOptions.path = nextUrl.path;
-      requestTagData(requestOptions, report);
+      requestTagData(options.parent.urlbase, requestOptions, report);
     //  console.log("Next request options: " + JSON.stringify(requestOptions));
     } else {
       callback(options.action, options.versions, options.parent);
     }
   }
-  requestTagData(requestOptions, report);
+  requestTagData(options.parent.urlbase, requestOptions, report);
 }
 
 
-function requestTagData (requestOptions, reportCallback) {
-//  console.log("requestTagData()");
+function requestTagData (projectId, requestOptions, reportCallback) {
+  //console.log("requestTagData() for " + projectId);
   var nextUrl = {};
 
   var req = https.get(requestOptions, function(response) {
@@ -115,8 +109,11 @@ function requestTagData (requestOptions, reportCallback) {
 
         // Remove non-numeric leading characters before sorting
         for (var i=0;i<page_data.length;i++) {
-          //console.log(page_data[i].name);
-          versions.push(page_data[i].name.replace(/^[^0-9]*|-.*$/g, ""));
+          var extracted = extractVersionId(projectId, page_data[i].name);
+          if (extracted != undefined ) {
+            //console.log("Extracted version is: " + extractVersionId(projectId, page_data[i].name));
+            versions.push(extracted);
+          }
         }
       }
       //console.log("and path will be: " + nextUrl.path);
@@ -170,6 +167,26 @@ function composeData (action, versions, parent) {
   }
 }
 
+/* extractVersionId(projectId, rawVersion)
+    - projectId is the Github :owner/:project string
+    - rawVersion is the version string to be processed
+   Based on known quirky strings from particular repos (projectId),
+   massage rawVersion into an acceptable form & return correct version string
+*/
+function extractVersionId(projectId, rawVersion) {
+
+  switch (projectId) {
+    case 'OpenImageIO/oiio':
+      //console.log("Quirking version string " + rawVersion + " for project: " + projectId);
+      if (rawVersion.search(/^Release-[0-9.]*$/) == 0 ) {
+        return rawVersion.replace(/^[^0-9]*|-.*$/g, "");
+      }
+      break;
+    default:
+      return rawVersion.replace(/^[^0-9]*|-.*$/g, "");
+      break;
+  }
+}
 
 // From Gilmargolin & JBKahn: https://gist.github.com/niallo/3109252
 function parse_link_header(header) {
