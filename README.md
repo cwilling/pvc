@@ -4,7 +4,7 @@ PVC maintains a "watch list" of software projects which may be manipulated using
 
 A project of interest is added to the watch list using pvc's *add* command; removed from the list with the *delete* command. The *add* command needs to be supplied with a project name, a repository type and a url base.
   - the project name is chosen arbitrarily by the user but is likely to reflect the actual project name.
-  - the repo type is any of the supported repository types which currently are *github*, *sourceforge*, *pypi*, *hackage*, *live555*, *suitesparse*, *vtk* and *libreoffice*. These built in types may be supplemented with additional user defined types by placing a suitably crafted module file in a prearranged user writable directory, from where it is added at run time.
+  - the repo type is any of the supported repository types which currently are *github*, *sourceforge*, *pypi*, *hackage*, *live555*, *suitesparse*, *vtk* and *libreoffice*. These built in types may be supplemented with additional user defined types by placing a suitably crafted module file in a prearranged user writable directory, from where it is added at run time (for details,see: [https://cwilling.github.io/pvc/](https://cwilling.github.io/pvc/).
   - the format of the url base required by the *add* command depends on the repo type:
     - github form is *owner/project name* e.g. cwilling/pvc
     - sourceforge form is *project name/(sub)project name* e.g. qwt/qwt or libvncserver/x11vnc
