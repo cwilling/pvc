@@ -1,11 +1,11 @@
-**PVC** is a command line driven asynchronous Project Version Checker. It enables checking of the latest versions of various software projects that may be held at different repositories e.g. github, sourceforge, pypi, etc.
+**PVC** is a command line driven asynchronous Project Version Checker. It enables checking of the latest versions of various software projects that may be held at different repositories e.g. github, sourceforge, pypi, etc. In addition to support of a range of such common public repositories, support for additional repos may be added by the user via a plugin system.
 
 PVC maintains a "watch list" of software projects which may be manipulated using the commands summarised below. Any or all of the projects can be queried for their version status using the *list* and *show* commands (for "local" status) and the *check* command for the latest online status of the project(s). This provides a simple mechanism to determine whether any of a number of upstream sources has released a new version.
 
 A project of interest is added to the watch list using pvc's *add* command; removed from the list with the *delete* command. The *add* command needs to be supplied with a project name, a repository type and a url base.
   - the project name is chosen arbitrarily by the user but is likely to reflect the actual project name.
-  - the repo type is any of the supported repository types which currently are *github*, *sourceforge*, *pypi*, *hackage*, *live555*, *suitesparse*, *vtk* and *libreoffice*. PVC is designed to enable additional types to be added fairly painlessly.
-  - the form of the url base required by the *add* command depends on the repo type:
+  - the repo type is any of the supported repository types which currently are *github*, *sourceforge*, *pypi*, *hackage*, *live555*, *suitesparse*, *vtk* and *libreoffice*. These built in types may be supplemented with additional user defined types by placing a suitably crafted module file in a prearranged user writable directory, from where it is added at run time.
+  - the format of the url base required by the *add* command depends on the repo type:
     - github form is *owner/project name* e.g. cwilling/pvc
     - sourceforge form is *project name/(sub)project name* e.g. qwt/qwt or libvncserver/x11vnc
     - pypi form is simply the *project name* e.g. Cython
