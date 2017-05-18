@@ -10,52 +10,18 @@ _**What's so good about the plugin system?**_ Different repository types (github
 
 Of course any new module files for repository types that might be widely used are welcome to be contributed for inclusion as one of _PVC_'s built in modules. A pull request would be a good mechanism for this sort of contribution.
 
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
 
 
 
 
 
-
-
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/cwilling/pvc/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
-
-
+more stuff here
 
 
 
 ## Writing new module files
 
-chjaskhcac cjkxljc
+more stuff here
 
 
 ### Example 1: vlc
@@ -98,7 +64,7 @@ returning the clean version number string `2.2.5.1`. We could also combine the t
 ```
 Our code strategy is now pretty clear: download the current listing of versions and extract the version number from each line into an array which we then then sort to determine the newest available version.
 
-First find the file _template-pvcWatcher-newtype.js_ and copy it with a new name to the directory ~/.local/share/pvc/. Open the new file with the editor of your choice. Note that there are 4 parts of the file where lines begin with `//!!!!` which indicate the items that need to be edited. The first item is setting the _reqpath_ variable; this is the last part of the url used previously for the _wget_ command above, in this case `pub/videolan/vlc/`. Therefore change the existing _reqpath_ definition to:
+First find the file _template-pvcWatcher-newtype.js_ and copy it with a new name to the directory ~/.local/share/pvc/. The new module's filename should be _pvcWatcher-vlc.js_. Open the new file with the editor of your choice. Note that there are 4 parts of the file where lines begin with `//!!!!` which indicate the items that need to be edited. The first item is setting the _reqpath_ variable; this is the last part of the url used previously for the _wget_ command above, in this case `pub/videolan/vlc/`. Therefore change the existing _reqpath_ definition to:
 ```
     var reqpath = 'pub/videolan/vlc/';
 ```
