@@ -60,7 +60,84 @@ chjaskhcac cjkxljc
 
 ### Example 1: vlc
 
-The video player _vlc_ is devloped and distributed from http://www.videolan.org/. VideoLAN develop and distribute some other software and we will later develop a module to deal with them too. For now, we'll treat this as a case where the repository distributes a single product. We'll choose the name "vlc" as the repo type for this module so the name of the module file will therefore be _pvcWatcher-vlc.js_.
+The video player _vlc_ is devloped and distributed from [http://www.videolan.org/](http://www.videolan.org/). VideoLAN develop and distribute some other software and we will later develop a module to deal with them too. For now, we'll treat this as a case where the repository distributes a single product. We'll choose the name "vlc" as the repo type for this module so the name of the module file will therefore be _pvcWatcher-vlc.js_.
 
-Some searching around the site will lead to a release archive at http://download.videolan.org/pub/videolan/vlc/ which contains a list of directories, each named after a particular release version. This makes an excellent starting point; the new module should be able to extract the version numbers fairly easily. We need to see the actual text behind the displayed web page since that is what our module will be dealing with. Run: _wget http://download.videolan.org/pub/videolan/vlc_. This will leave a file named _vlc_ in your current directory. Examine the file with _less_, or whatever tool you like, and you'll see that it's made up of a number of lines beginning with `<a href="0.1.99/">0.1.99/</a>, <a href="0.1.99a/">0.1.99a/</a>, ..., <a href="2.2.4/">2.2.4/</a>, <a href="2.2.5/">2.2.5/</a>, <a href="2.2.5.1/">2.2.5.1/</a>, etc`.
-The version numbers are clearly visible twice per entry. We could extract the second in each line with a regular expression targeting any collection of numbers and dots bounded at the start with a ">" character and at the end with a "/" character. Before proceeding to code it up, I usually to figure out the required regex using node at the command line. At node's prompt, enter `str = '<a href="2.2.5.1/">2.2.5.1/</a>'` (the first part of one of the lines). Now we can try various regexps using the match function e.g. `str.match(/>[0-9.]*\//);`. This returns an array whose first element contains whatever has been matched, in this case `'>2.2.5.1/'`. We can remove the ">" with: `str.match(/>[0-9.]*\//)[0].replace(/^>/,"");` which returns `'2.2.5.1/'` and we could then remove the trailing "/" with: `str.match(/>[0-9.]*\//)[0].replace(/^>/,"").replace(/\/$/,"");` returning the clean version number string `2.2.5.1`. We can also combine the two replacement regexps into one by using: `str.match(/>[0-9.]*\//)[0].replace(/^>|\/$/g,"");`. Our code strategy is pretty clear: download the current listing of versions and extract the version number from each line into an array which we then then sort to determine the newest available version.
+Some searching around the site will lead to a release archive at [http://download.videolan.org/pub/videolan/vlc/](http://download.videolan.org/pub/videolan/vlc/) which contains a list of directories, each named after a particular release version. This makes an excellent starting point; the new module should be able to extract the version numbers fairly easily. We need to see the actual text behind the displayed web page since that is what our module will be dealing with. Run:
+```
+    wget http://download.videolan.org/pub/videolan/vlc/
+```
+This will leave a file named _index.html_ in your current directory. Examine the file with _less_, or whatever tool you like, and you'll see that it's made up of a number of lines beginning with
+```html
+    <a href="0.1.99/">0.1.99/</a>
+    <a href="0.1.99a/">0.1.99a/</a>
+    ...,
+    <a href="2.2.4/">2.2.4/</a>
+    <a href="2.2.5/">2.2.5/</a>
+    <a href="2.2.5.1/">2.2.5.1/</a>
+    etc
+```
+The version numbers are clearly visible twice per entry. We could extract the second instance in each line with a regular expression targeting any collection of numbers and dots (but beginning with a number) bounded at the start with a ">" character and at the end with a "/" character. Before proceeding to code it up, I usually try to figure out the required regex using _node_ at the command line. At node's prompt, enter
+```
+    var str = '<a href="2.2.5.1/">2.2.5.1/</a>';
+```
+which is the first part of one of the lines. Now we can try various regexps using the match function e.g.
+```
+    var matched = str.match(/>[0-9][0-9.]*\//);
+```
+This returns an array named _matched_ whose first element contains whatever has been matched, in this case `'>2.2.5.1/'`. We can remove the leading ">" with:
+```
+    matched[0].replace(/^>/,"");
+```
+which returns `'2.2.5.1/'` and we could then add another _replace()_ to remove the trailing "/" with:
+```
+    matched[0].replace(/^>/,"").replace(/\/$/,"");
+```
+returning the clean version number string `2.2.5.1`. We could also combine the two replacement regexps into one by using:
+```
+    matched[0].replace(/^>|\/$/g,"");
+```
+Our code strategy is now pretty clear: download the current listing of versions and extract the version number from each line into an array which we then then sort to determine the newest available version.
+
+First find the file _template-pvcWatcher-newtype.js_ and copy it with a new name to the directory ~/.local/share/pvc/. Open the new file with the editor of your choice. Note that there are 4 parts of the file where lines begin with `//!!!!` which indicate the items that need to be edited. The first item is setting the _reqpath_ variable; this is the last part of the url used previously for the _wget_ command above, in this case `pub/videolan/vlc/`. Therefore change the existing _reqpath_ definition to:
+```
+    var reqpath = 'pub/videolan/vlc/';
+```
+
+The next item to set is the host name. Change the host definition line to:
+```
+    host: 'download.videolan.org',
+```
+
+Now skip to the last item, renaming the _template\_functions_  object (to _vlc\_functions_). Change its declaration line to:
+```
+    vlc_functions = {
+```
+
+Lets return to the item where we extract the version number, labelled _Process res_data here, leaving version numbers in versions[]_. The requested data has been downloaded as a stream of bytes which is now available to us as _res_data_. We convert that data into an array of lines by adding:
+```
+    res_data = res_data.split(/\r?\n/);
+```
+
+We now need to loop through all the available lines trying to match potential version strings just as we did above at the _node_ command line. For any matches that we find, we remove extraneous leading and trailing characters and add the clean version string to the already declared _versions_ array. Do this by adding:
+```
+    for (var i=0;i<res_data.length;i++) {
+       //console.log(res_data[i]);
+       var matched = res_data[i].match(/>[0-9][0-9.]*\//);
+       if (matched) {
+           //console.log("matched = " + matched[0]);
+           versions.push(matched[0].replace(/^>|\/$/g,""));
+       }
+    }
+```    
+
+All having gone well, the new module file is ready to go so save it and exit the editor. To check that the new module is recognised, run:
+```
+    pvc config
+```
+
+which should now show _vlc_ in the list of available retrieval types. If so, a new _vlc_ project can be added to _pvc_'s watch list with:
+```
+    pvc add --project vlc --type vlc --urlbase vlc
+```
+On completion, _pcv_ should display something like `NOTE: latest version is 2.2.5.1`, depending on whatever the latest version actually is. If it instead responds with `NOTE: latest version is undefined`, then something has gone wrong and it's time to start debugging ...
+
