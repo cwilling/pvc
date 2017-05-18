@@ -1,5 +1,5 @@
 const https = require('https');
-const common = require('./pvcCommon.js');
+const common = require(pvcStartDir + '/pvcCommon.js');
 
 var check = function (parent, options) {
   var action = options.action || 'check';
@@ -18,8 +18,8 @@ var check = function (parent, options) {
     port: 443,
     path: '/package/' + parent.urlbase
   };
-
   //console.log("Request: " + requestOptions.path);
+
   var req = https.get(requestOptions, function(response) {
     // handle the response
     var res_data = '';
@@ -39,16 +39,17 @@ var check = function (parent, options) {
               break;
           }
       }
+
       switch (action) {
         case 'update':
-          if ( ! version ) {
+          if (! version) {
             eventEmitter.emit('UpdateWatcher', parent, void 0);
           } else {
             eventEmitter.emit('UpdateWatcher', parent, version);
           }
           break;
         case 'validate':
-          if ( ! version ) {
+          if (! version) {
             //console.log("ERROR! \"Latest Release\" not found in " + res_data);
             eventEmitter.emit('NotValidWatcher', parent);
           } else {
@@ -61,7 +62,7 @@ var check = function (parent, options) {
           break;
         case 'check':
         default:
-          if ( ! version ) {
+          if (! version) {
             eventEmitter.emit('CheckedWatcher', parent, void 0);
           } else {
             eventEmitter.emit('CheckedWatcher', parent, version)

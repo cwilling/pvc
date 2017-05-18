@@ -1,5 +1,5 @@
 const http = require('http');
-const common = require('./pvcCommon.js');
+const common = require(pvcStartDir + '/pvcCommon.js');
 
 var check = function (parent, options) {
   var action = options.action || 'check';
@@ -17,8 +17,8 @@ var check = function (parent, options) {
     host: 'www.vtk.org',
     path: '/download/'
   };
+  //console.log("Request: " + JSON.stringify(requestOptions, null, 1));
 
-  console.log("Request: " + requestOptions.path);
   var req = http.get(requestOptions, function(response) {
     // handle the response
     var res_data = '';
@@ -29,8 +29,7 @@ var check = function (parent, options) {
     response.on('end', function() {
       res_data = res_data.split(/\r?\n/);
 
-      var version = "";
-      var version_found = false;
+      var version;
       for(var i in res_data) {
           if (res_data[i].search("latest") > 0) {
               //console.log("Found " + res_data[i]);
@@ -38,20 +37,19 @@ var check = function (parent, options) {
               var end = res_data[i].indexOf(')');
               version = res_data[i].slice(start+1, end);
               //console.log("version = " + version);
-              version_found = true;
               break;
           }
       }
       switch (action) {
         case 'update':
-          if ( ! version_found ) {
+          if (! version) {
             eventEmitter.emit('UpdateWatcher', parent, void 0);
           } else {
             eventEmitter.emit('UpdateWatcher', parent, version);
           }
           break;
         case 'validate':
-          if ( ! version_found ) {
+          if (! version) {
             //console.log("ERROR! \"Latest Release\" not found in " + res_data);
             eventEmitter.emit('NotValidWatcher', parent);
           } else {
@@ -64,7 +62,7 @@ var check = function (parent, options) {
           break;
         case 'check':
         default:
-          if ( ! version_found ) {
+          if (! version) {
             eventEmitter.emit('CheckedWatcher', parent, void 0);
           } else {
             eventEmitter.emit('CheckedWatcher', parent, version)
@@ -84,7 +82,6 @@ var check = function (parent, options) {
 vtk_functions = {
   "check":check,
 };
-//  "isValid":isValid,
 
 
 /* ex:set ai shiftwidth=2 inputtab=spaces smarttab noautotab: */

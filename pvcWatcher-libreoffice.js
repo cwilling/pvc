@@ -1,5 +1,5 @@
 const https = require('https');
-const common = require('./pvcCommon.js');
+const common = require(pvcStartDir + '/pvcCommon.js');
 
 var check = function (parent, options) {
   var action = options.action || 'check';
@@ -47,14 +47,14 @@ var check = function (parent, options) {
 
       switch (action) {
         case 'update':
-          if ( ! tarballName ) {
+          if (! version) {
             eventEmitter.emit('UpdateWatcher', parent, void 0);
           } else {
             eventEmitter.emit('UpdateWatcher', parent, version);
           }
           break;
         case 'validate':
-          if ( ! tarballName ) {
+          if (! version) {
             console.log("ERROR! tarball download not found in " + res_data);
             eventEmitter.emit('NotValidWatcher', parent);
           } else {
@@ -67,7 +67,7 @@ var check = function (parent, options) {
           break;
         case 'check':
         default:
-          if ( ! tarballName ) {
+          if (! version) {
             eventEmitter.emit('CheckedWatcher', parent, void 0);
           } else {
             eventEmitter.emit('CheckedWatcher', parent, version)
@@ -81,7 +81,6 @@ var check = function (parent, options) {
   });
 
 }
-
 
 
 libreoffice_functions = {

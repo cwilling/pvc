@@ -137,14 +137,14 @@ function composeData (action, versions, parent) {
 
   switch (action) {
     case 'update':
-      if (versions.length == 0) {
+      if (! versions) {
         eventEmitter.emit('UpdateWatcher', parent, void 0);
       } else {
         eventEmitter.emit('UpdateWatcher', parent, versions[0]);
       }
       break
     case 'validate':
-      if (versions.length == 0) {
+      if (! versions) {
         console.log("ERROR! Request returned: " + res_data);
         eventEmitter.emit('NotValidWatcher', parent);
       } else {
@@ -158,7 +158,7 @@ function composeData (action, versions, parent) {
       break;
     case 'check':
     default:
-      if (versions.length == 0) {
+      if (! versions) {
         eventEmitter.emit('CheckedWatcher', parent, void 0);
       } else {
         eventEmitter.emit('CheckedWatcher', parent, versions[0]);
@@ -170,6 +170,7 @@ function composeData (action, versions, parent) {
 /* extractVersionId(projectId, rawVersion)
     - projectId is the Github :owner/:project string
     - rawVersion is the version string to be processed
+
    Based on known quirky strings from particular repos (projectId),
    massage rawVersion into an acceptable form & return correct version string
 */

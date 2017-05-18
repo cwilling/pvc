@@ -1,10 +1,9 @@
 const http = require('http');
-const common = require('./pvcCommon.js');
+const common = require(pvcStartDir + '/pvcCommon');
 
 var check = function (parent, options) {
   var action = options.action || 'check';
   var config = options.config || null;
-  //console.log("check() for project " + parent.project);
 
   // http request
   var reqpath = parent.urlbase;
@@ -17,8 +16,8 @@ var check = function (parent, options) {
     host: 'faculty.cse.tamu.edu',
     path: '/davis/SuiteSparse/'
   };
-
   //console.log("Request: " + requestOptions.path);
+
   var req = http.get(requestOptions, function(response) {
     // handle the response
     var res_data = '';
@@ -39,6 +38,7 @@ var check = function (parent, options) {
         }
       }
       versions.sort( function(a,b) { return naturalCompare(b, a); });
+
       switch (action) {
         case 'update':
           if ( ! versions ) {
@@ -76,7 +76,6 @@ var check = function (parent, options) {
   });
 
 }
-
 
 suitesparse_functions = {
   "check":check,

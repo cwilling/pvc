@@ -1,5 +1,5 @@
 const http = require('http');
-const common = require('./pvcCommon.js');
+const common = require(pvcStartDir + '/pvcCommon.js');
 
 var check = function (parent, options) {
   var action = options.action || 'check';
@@ -17,13 +17,12 @@ var check = function (parent, options) {
     host: 'mattmahoney.net',
     path: '/dc/zpaq.html'
   };
-
   //console.log("Request: " + requestOptions.path);
+
   var req = http.get(requestOptions, function(response) {
     // handle the response
     var res_data = '';
     response.on('data', function(chunk) {
-      //console.log(".....chunk");
       res_data += chunk;
     });
     response.on('end', function() {
@@ -39,16 +38,17 @@ var check = function (parent, options) {
         }
       }
       versions.sort( function(a,b) { return naturalCompare(b, a); });
+
       switch (action) {
         case 'update':
-          if ( ! versions ) {
+          if (! versions) {
             eventEmitter.emit('UpdateWatcher', parent, void 0);
           } else {
             eventEmitter.emit('UpdateWatcher', parent, versions[0]);
           }
           break;
         case 'validate':
-          if ( ! versions ) {
+          if (! versions) {
             //console.log("ERROR! \"Latest Release\" not found in " + res_data);
             eventEmitter.emit('NotValidWatcher', parent);
           } else {
@@ -61,7 +61,7 @@ var check = function (parent, options) {
           break;
         case 'check':
         default:
-          if ( ! versions ) {
+          if (! versions) {
             eventEmitter.emit('CheckedWatcher', parent, void 0);
           } else {
             eventEmitter.emit('CheckedWatcher', parent, versions[0])

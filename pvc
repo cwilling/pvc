@@ -1,16 +1,18 @@
 #!/usr/bin/env node
 
-const Watcher = require("./pvcWatcher");
 const events = require('events');
 const fs = require('fs')
 const os = require('os');
 
-var pvcConfig;
+pvcLocalDir = os.homedir() + '/.local/share/pvc'; // global for use in pvcWatcher.js
+const Watcher = require("./pvcWatcher");
+
+var myArgs = process.argv.slice(2);
+var pvcConfig = {};
 var action;
 var siteList = [];
 var watchers = [];
 var checkCounter = {"size":0, "counter":0};
-var myArgs = process.argv.slice(2);
 
 global.eventEmitter = new events.EventEmitter();
 
@@ -87,7 +89,6 @@ eventEmitter.on('config_ready', function (obj) {
 // on.setup_ready, parse commands
 
 // Definitions
-var pvcLocalDir = os.homedir() + '/.local/share/pvc';
 var pvcConfigDir = os.homedir() + '/.config/pvc';
 var pvcConfigFile = pvcConfigDir + '/pvcConfig.json';
 var pvcWatchListFile = pvcLocalDir + '/watchList.json';
@@ -161,6 +162,13 @@ function pvcLoadConfiguration () {
     }
     //console.log("pvcLoadConfiguration");
     var obj = JSON.parse(data)
+
+    // Add "global" definitions
+    obj["pvcLocalDir"] = pvcLocalDir;
+    obj["pvcConfigDir"] = pvcConfigDir;
+    obj["pvcConfigFile"] = pvcConfigFile;
+    obj["pvcWatchListFile"] = pvcWatchListFile;
+
     eventEmitter.emit("config_ready", obj);
   });
 }
@@ -346,9 +354,10 @@ function parseCommand () {
             if ( ret < 0 ) {
               // Missing option for config command => show pertinent pvc information
               //console.log("PVC - Project Version Checker \u00A9Copyright 2017 Christoph Willing");
+              //console.log("XXXX pvcConfig: " + JSON.stringify(pvcConfig,null,1));
               console.log("PVC - Project Version Checker");
-              console.log("       watched projects file: " + pvcWatchListFile);
-              console.log("     user configuration file: " + pvcConfigFile);
+              console.log("       watched projects file: " + pvcConfig["pvcWatchListFile"]);
+              console.log("     user configuration file: " + pvcConfig["pvcConfigFile"]);
               console.log("   available retrieval types: " + pvcRetrievalTypes);
               process.exit(0);
             } else {

@@ -1,5 +1,5 @@
 const https = require('https');
-const common = require('./pvcCommon.js');
+const common = require(pvcStartDir + '/pvcCommon.js');
 
 var check = function (parent, options) {
   var action = options.action || 'check';
@@ -20,11 +20,13 @@ var check = function (parent, options) {
     port: 443,
     path: '/' + reqpath
   };
+
   // Don't know what a sourceforge auth looks like ...
   if (config.sourceforge && config.sourceforge.auth) {
     requestOptions.headers['Authorization'] = config.sourceforge.auth;
   }
   //console.log("Request: " + requestOptions.path);
+
   var req = https.get(requestOptions, function(response) {
     // handle the response
     var res_data = '';
@@ -48,25 +50,25 @@ var check = function (parent, options) {
               break;
           }
       }
-      if ( files) {
+      if (files) {
         var rawVersions = Object.keys(files);
         //console.log("Raw versions: " + rawVersions);
         for (var i=0;i<rawVersions.length;i++ ) {
           versions.push(rawVersions[i].replace(/^[^0-9]*/, ""));
         }
-        //console.log("Stripped versions: " + versions);
-        versions.sort( function(a,b) { return naturalCompare(b, a); });
       }
+      versions.sort( function(a,b) { return naturalCompare(b, a); });
+
       switch (action) {
         case 'update':
-          if ( ! files ) {
+          if (! versions) {
             eventEmitter.emit('UpdateWatcher', parent, void 0);
           } else {
             eventEmitter.emit('UpdateWatcher', parent, versions[0]);
           }
           break;
         case 'validate':
-          if ( ! files ) {
+          if (! versions) {
             console.log("ERROR! net.sf.files not found in " + res_data);
             eventEmitter.emit('NotValidWatcher', parent);
           } else {
@@ -79,7 +81,7 @@ var check = function (parent, options) {
           break;
         case 'check':
         default:
-          if ( ! files ) {
+          if (! versions) {
             eventEmitter.emit('CheckedWatcher', parent, void 0);
           } else {
             eventEmitter.emit('CheckedWatcher', parent, versions[0])

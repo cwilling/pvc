@@ -1,5 +1,5 @@
 const https = require('https');
-const common = require('./pvcCommon.js');
+const common = require(pvcStartDir + '/pvcCommon.js');
 
 
 var check = function (parent, options) {
@@ -35,27 +35,27 @@ var check = function (parent, options) {
         response.on('end', function() {
           //console.log(res_data);
           var page_data = JSON.parse(res_data);
+          var versions = [];
           if (page_data) {
-            var versions = [];
             var releases = Object.keys(page_data.releases);
             for (var i=0;i<releases.length;i++) {
               // Remove non-numeric leading characters before sorting
               //console.log(releases[i]);
               versions.push(releases[i].replace(/^[^0-9]*/, ""));
             }
-            versions.sort( function(a,b) { return naturalCompare(b, a); });
           }
+          versions.sort( function(a,b) { return naturalCompare(b, a); });
 
           switch (action) {
             case 'update':
-              if (page_data == undefined) {
+              if (! versions) {
                 eventEmitter.emit('UpdateWatcher', parent, void 0);
               } else {
                 eventEmitter.emit('UpdateWatcher', parent, versions[0]);
               }
               break
             case 'validate':
-              if (page_data == undefined) {
+              if (! versions) {
                 console.log("ERROR! Request returned: " + res_data);
                 eventEmitter.emit('NotValidWatcher', parent);
               } else {
@@ -68,7 +68,7 @@ var check = function (parent, options) {
               break;
             case 'check':
             default:
-              if (page_data == undefined) {
+              if (! versions) {
                 eventEmitter.emit('CheckedWatcher', parent, void 0);
               } else {
                 versions.sort( function(a,b) { return naturalCompare(b, a); });

@@ -1,14 +1,21 @@
-const https = require('https');
 const fs = require("fs");
 
 // Load plugins
-pvcRetrievalTypes = []; // Global
+var pluginPaths = ['./', pvcLocalDir];
 var watcherFunctions = {};
-function checkName(name) {
+pvcRetrievalTypes = []; // Global from pvc
+pvcStartDir = __dirname; // global for modules
+
+pluginPaths.forEach( function (path, index) {
+  //console.log("Doing: " + path + "  " + index);
+  /* Used to be fs.readdirSync(path).filter(checkName);
+     Now anonymous inline to use "path" variable for module loading
+  */
+  fs.readdirSync(path).filter( function (name) {
     var moduleType = "";
-    //console.log("checkName(): " + name);
-    if (name.match(/pvcWatcher-\S*.js/)) {
-        require("./" + name);
+    //console.log("checkName(): " + name + " path: " + path);
+    if (name.match(/^pvcWatcher-\S*.js/)) {
+        require(path + "/" + name);
         moduleType = name.replace(/^pvcWatcher-|.js$/g,"");
         pvcRetrievalTypes.push(moduleType);
         watcherFunctions["moduleType"] = moduleType + "_functions";
@@ -17,10 +24,8 @@ function checkName(name) {
     } else {
         return false;
     }
-}
-var pluginPath = "./";
-fs.readdirSync(pluginPath).filter(checkName);
-//console.log("pvcRetrievalTypes = " + pvcRetrievalTypes);
+  });
+});
 
 
 function Watcher () {
@@ -42,41 +47,30 @@ function Watcher () {
 module.exports = Watcher;
 
 Watcher.prototype.check = function (options) {
-  //console.log("check() for project " + this.project);
+  eval("(" + this.type + '_functions.check' + ")")(this, options);
 
-switch (this.type) {
-    case 'github':
-      github_functions.check(this, options);
-      break;
-    case 'sourceforge':
-      sourceforge_functions.check(this, options);
-      break;
-    case 'pypi':
-      pypi_functions.check(this, options);
-      break;
-    case 'libreoffice':
-      libreoffice_functions.check(this, options);
-      break;
-    case 'hackage':
-      hackage_functions.check(this, options);
-      break;
-    case 'live555':
-      live555_functions.check(this, options);
-      break;
-    case 'suitesparse':
-      suitesparse_functions.check(this, options);
-      break;
-    case 'vtk':
-      vtk_functions.check(this, options);
-      break;
-    case 'zpaq':
-      zpaq_functions.check(this, options);
-      break;
-    default:
-      console.log("Can't check unknown retrieval type (" + this.type + ")");
-      console.log("Must be from " + pvcRetrievalTypes);
-      break;
-  } /* switch */
+  /*  That much maligned eval replaces a switch statement with a case for each
+      project type that needs adding to for each new type to be supported.
+
+      switch (this.type) {
+          case 'github':
+            github_functions.check(this, options);
+            break;
+          case 'sourceforge':
+            sourceforge_functions.check(this, options);
+            break;
+          case ....
+          case ....
+          case ....
+          case ....
+          case ....
+          case ....
+          default;
+      }
+
+      Instead, the eval enables new module files to be used just by placing them in one
+      of the recognised plugin directories.
+  */
 }
 
 
