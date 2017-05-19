@@ -46,7 +46,7 @@ where XXXX is a string of any length representing the new _type_ which the modul
 More to come ....
 
 
-### Example 1 - a single project repo
+### Example 1. A single project repo
 
 The video player _vlc_ is devloped and distributed from [http://www.videolan.org/](http://www.videolan.org/). VideoLAN develop and distribute some other software and we will later develop a module to deal with them too. For now, we'll treat this as a case where the repository distributes a single product. We'll choose the name "vlc" as the repo type for this module so the name of the module file will therefore be _pvcWatcher-vlc.js_.
 
@@ -130,6 +130,65 @@ which should now show _vlc_ in the list of available retrieval types. If so, a n
 On completion, _pcv_ should display something like `NOTE: latest version is 2.2.5.1`, depending on whatever the latest version actually is. If it instead responds with `NOTE: latest version is undefined`, then something has gone wrong and it's time to start debugging ...
 
 
-### Example 2 - a multi project repo
+### Example 2. A multi project repo
 
-Many repositories host multiple projects e.g. github, sourceforge, pypi etc., and these can generally be supported by a single module file. Recall that although we developed [Example 1](#example-1-\--a-single-project-repo) as a single project repository, the VideoLAN site actually hosts a number of projects which can be seen as a directory listing with an ordinary at [https://download.videolan.org/pub/videolan/](https://download.videolan.org/pub/videolan/). Conveniently, the layout within those different project directories is similar to that in the _vlc_ directory which we've already coded for. The _urlbase_ was not needed in the first example since all the relevant information for the single project being addressed in a single directory. However if we made a module file for a new _videolan_ type where the _reqpath_ could be set according the value of the _urlbase_, we would have a mechanism to query any of the VideoLAN hosted projects.
+Many repositories host multiple projects e.g. github, sourceforge, pypi etc., and these can generally be supported by a single module file. Recall that although we developed [Example 1](#example-1.-a-single-project-repo) as a single project repository, the VideoLAN site actually hosts a number of projects. These can be seen as a directory listing with an ordinary browser at [https://download.videolan.org/pub/videolan/](https://download.videolan.org/pub/videolan/). Conveniently, the layout within those different project directories mostly is similar to that in the _vlc_ directory which we've already coded for. The _urlbase_ was not needed in the first example since all the relevant information for the single project being addressed existed in a single directory. However if we made a module file for a new _videolan_ type where the _reqpath_ could be set according the value of the _urlbase_, we would have a mechanism to query any of the VideoLAN hosted projects.
+
+In ~/.local/share/pvc directory, change the name of the file _pvcWatcher-vlc.js_ to _pvcWatcher-videolan.js_. Now open it with an editor and find the line where  _reqpath_ is declared and change it to:
+```
+    var reqpath = 'pub/videolan/' + parent.urlpath + '/';
+```
+
+Near the end of the file, change the `vlc_functions` object declaration line to:
+```
+    videolan_functions = {
+```
+Save the file and exit the editor. To check that the new module file is recognised by _PVC_, run the command:
+```
+   pvc config
+```
+The output should include `videolan` in its listing of available retrieval types. If there remains an earlier addition of the _vlc_ project using the _vlc_ repo type of [Example 1](#example-1.-a-single-project-repo), remove it with:
+```
+    pvc delete --project vlc
+```
+Now try adding the _vlc_ project again, this time using the new _videolan_ repo type with the command:
+```
+    pvc add --project vlc --type videolan --urlbase vlc
+```
+It should report `NOTE: latest version is 2.2.5.1` (or whatever the latest version is at the time). Now try adding another project from the same repository e.g.
+```
+    pvc add --project libbluray --type videolan --urlbase libbluray
+```
+whose output should include `NOTE: latest version is 1.0.0` (or whatever).
+
+## Example 3. Repo quirks
+
+Sometimes it is necessary to deal with inconsistent presentation of the project data by the repository. The VideoLAN projects generally follow the pattern of providing a list of the different versions of a project, naming each directory after the version they represent e.g. `0.3.0, 0.3.1, 0.3.2, .....`. It's this consistency that make it relatively easy to deal with VideoLAN's multiple projects. However, navigate with a browser to the the _x265_ project directory where, instead of a list of version directories, is a collection of tarballs. Even worse, the _x264_ project directory requires navigation to another _snapshots_ directory before a list of tarball links is found here too.
+
+To deal with different numbering conventions, be they directory names, tarball names etc., we can use different regular expressions to extract version strings depending on the name of the project i.e. _x264_ project files will need a different regexp to the _x265_ files. Rather than clutter the main _check()_ function with all possible cases, we can pass this work off to a new function to extract the version string which is returned to the _check()_ for addition to the _versions_ array, as before.
+
+In the new _pvcWatcher-videolan.js_ file from around line 34, change the existing version extraction loop from:
+```
+      for (var i=0;i<res_data.length;i++) {
+        //console.log(res_data[i]);
+        var matched = res_data[i].match(/>[0-9][0-9.]*\//);
+        if (matched) {
+          //console.log("matched = " + matched[0]);
+          versions.push(matched[0].replace(/^>|\/$/g,""));
+        }
+      }
+```
+to:
+```
+        for (var i=0;i<res_data.length;i++) {
+          //console.log(res_data[i]);
+          var extracted = extractVersionId(parent.urlbase, res_data[i]);
+          if (extracted) {
+            //console.log("extracted = " + extracted);
+            versions.push(extracted);
+          }
+        }
+```
+We'll be calling a new function _extractVersionId_, passing it the name of the project directory (via the _parent.urlbase_ parameter) as well as the line of data from which to extract the version string.
+
+(more tomorrow)
