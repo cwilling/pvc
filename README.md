@@ -46,7 +46,7 @@ where XXXX is a string of any length representing the new _type_ which the modul
 More to come ....
 
 
-### Example 1: vlc
+### Example 1 - a single project repo
 
 The video player _vlc_ is devloped and distributed from [http://www.videolan.org/](http://www.videolan.org/). VideoLAN develop and distribute some other software and we will later develop a module to deal with them too. For now, we'll treat this as a case where the repository distributes a single product. We'll choose the name "vlc" as the repo type for this module so the name of the module file will therefore be _pvcWatcher-vlc.js_.
 
@@ -129,3 +129,7 @@ which should now show _vlc_ in the list of available retrieval types. If so, a n
 ```
 On completion, _pcv_ should display something like `NOTE: latest version is 2.2.5.1`, depending on whatever the latest version actually is. If it instead responds with `NOTE: latest version is undefined`, then something has gone wrong and it's time to start debugging ...
 
+
+### Example 2 - a multi project repo
+
+Many repositories host multiple projects e.g. github, sourceforge, pypi etc., and these can generally be supported by a single module file. Recall that although we developed [Example 1](#example-1-\--a-single-project-repo) as a single project repository, the VideoLAN site actually hosts a number of projects which can be seen as a directory listing with an ordinary at [https://download.videolan.org/pub/videolan/](https://download.videolan.org/pub/videolan/). Conveniently, the layout within those different project directories is similar to that in the _vlc_ directory which we've already coded for. The _urlbase_ was not needed in the first example since all the relevant information for the single project being addressed in a single directory. However if we made a module file for a new _videolan_ type where the _reqpath_ could be set according the value of the _urlbase_, we would have a mechanism to query any of the VideoLAN hosted projects.
