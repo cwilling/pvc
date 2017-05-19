@@ -165,7 +165,20 @@ whose output should include `NOTE: latest version is 1.0.0` (or whatever).
 
 Sometimes it is necessary to deal with inconsistent presentation of the project data by the repository. The VideoLAN projects generally follow the pattern of providing a list of the different versions of a project, naming each directory after the version they represent e.g. `0.3.0, 0.3.1, 0.3.2, .....`. It's this consistency that make it relatively easy to deal with VideoLAN's multiple projects. However, navigate with a browser to the the _x265_ project directory where, instead of a list of version directories, is a collection of tarballs. Even worse, the _x264_ project directory requires navigation to another _snapshots_ directory before a list of tarball links is found here too.
 
-To deal with different numbering conventions, be they directory names, tarball names etc., we can use different regular expressions to extract version strings depending on the name of the project i.e. _x264_ project files will need a different regexp to the _x265_ files. Rather than clutter the main _check()_ function with all possible cases, we can pass this work off to a new function to extract the version string which is returned to the _check()_ for addition to the _versions_ array, as before.
+Assuming that the different directory levels for the _x264_ project is unusual, it can be dealt fairly simply when we set the request path by changing the line:
+```
+    var reqpath = 'pub/videolan/' + parent.urlbase + '/';
+```
+to:
+```
+    if (parent.urlbase == 'x264') {
+      var reqpath = 'pub/videolan/' + parent.urlbase + '/snapshots/';
+    } else {
+      var reqpath = 'pub/videolan/' + parent.urlbase + '/';
+    }
+```
+
+To deal with different numbering conventions, be they directory names, tarball names etc., we can use different regular expressions to extract version strings depending on the name of the project i.e. _x264_ project files will need a different regexp to the _x265_ files. Over time, there may further cases requiring similar treatment so, rather than clutter the main _check()_ function with all possible cases, we can pass this work off to a new function which will deal with the special cases to correctly extract the version string and return it to _check()_ for addition to the _versions_ array, as before.
 
 In the new _pvcWatcher-videolan.js_ file from around line 34, change the existing version extraction loop from:
 ```
@@ -189,6 +202,24 @@ to:
           }
         }
 ```
-We'll be calling a new function _extractVersionId_, passing it the name of the project directory (via the _parent.urlbase_ parameter) as well as the line of data from which to extract the version string.
+We'll be calling a new function _extractVersionId(projectId,rawVersion)_, passing it the name of the project directory (via the _parent.urlbase_ parameter) as well as the line of data (via _rawVersion_) from which to extract the version string.
 
-(more tomorrow)
+The new version extraction function can consist of just a _switch_ statement which returns the extracted version string depending on the project being dealt with. Additional cases can easily be added later should the need arise. The new function will look something like:
+```
+function extractVersionId(projectId, rawVersion) {
+  switch (projectId) {
+    case 'x264':
+      return version string extracted specially from format of x264 entries
+      break;
+    case 'x265':
+      return version string extracted specially from format of x265 entries
+      break;
+    default:
+      var matched = rawVersion.match(/>[0-9][0-9.]*\//);
+      if (matched) {
+        return matched[0].replace(/^>|\/$/g,"");
+      }
+      break;
+  }
+```
+Note that the default i.e. "not special" case is just the same as the original extraction code in _check()_ before we started considering the differing presentations of the _x264_ and _x265_ project data.
