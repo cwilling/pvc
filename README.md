@@ -1,6 +1,6 @@
-## Welcome to PVC,
-## a Program Version Checker
+## PVC, a Program Version Checker
 
+_**Overview**_
 _PVC_ is a command line driven asynchronous Project Version Checker. It enables checking of the latest versions of various software projects that may be held at different repositories e.g. github, sourceforge, pypi, etc. In addition to built in support for a range of such common public repositories, support for additional repos may be added by the user via a plugin system.
 
 _**What is asynchronous about it?**_ For any list of software projects being tracked, instead of working through the list and connecting one at a time to each of the relevant repositories, _PVC_ opens connections to all the repos at the same time. If each network query to a repo takes, say, 3 seconds to return a result then a sequential iteration through a list of, say, 20 projects would take about 60 seconds to complete. On the other hand the asynchronous approach entails connecting to all 20 repos at the same time and all results are returned in about 3 seconds. In case that sounds too good to be true, let's say 5 seconds.
