@@ -1,4 +1,11 @@
-### Example 1. A single project repo
+This tutorial example of how to create a new module file for _PVC_ has three parts.
+
+- Part 1 introduces the simplest type of repository, a site hosting a single software project.
+- Part 2 shows how to modify the module file created in Part 1 to support multiple projects at a single site
+- Part 3 suggests strategies to deal with possible inconsistencies in a site's presentation of its data
+
+
+### Part 1. A single project repo
 
 The video player _vlc_ is devloped and distributed from [http://www.videolan.org/](http://www.videolan.org/). VideoLAN develop and distribute some other software and we will later develop a module to deal with them too. For now, we'll treat this as a case where the repository distributes a single product. We'll choose the name "vlc" as the repo type for this module so the name of the module file will therefore be _pvcWatcher-vlc.js_.
 
@@ -82,7 +89,7 @@ which should now show _vlc_ in the list of available retrieval types. If so, a n
 On completion, _pcv_ should display something like `NOTE: latest version is 2.2.5.1`, depending on whatever the latest version actually is. If it instead responds with `NOTE: latest version is undefined`, then something has gone wrong and it's time to start debugging ...
 
 
-### Example 2. A multi project repo
+### Part 2. A multi project repo
 
 Many repositories host multiple projects e.g. github, sourceforge, pypi etc., and these can generally be supported by a single module file. Recall that although we developed [Example 1](#example-1.-a-single-project-repo) as a single project repository, the VideoLAN site actually hosts a number of projects. These can be seen as a directory listing with an ordinary browser at [https://download.videolan.org/pub/videolan/](https://download.videolan.org/pub/videolan/). Conveniently, the layout within those different project directories mostly is similar to that in the _vlc_ directory which we've already coded for. The _urlbase_ was not needed in the first example since all the relevant information for the single project being addressed existed in a single directory. However if we made a module file for a new _videolan_ type where the _reqpath_ could be set according the value of the _urlbase_, we would have a mechanism to query any of the VideoLAN hosted projects.
 
@@ -113,7 +120,7 @@ It should report `NOTE: latest version is 2.2.5.1` (or whatever the latest versi
 ```
 whose output should include `NOTE: latest version is 1.0.0` (or whatever).
 
-## Example 3. Repo quirks
+## Part 3. Repository quirks
 
 Sometimes it is necessary to deal with inconsistent presentation of the project data by the repository. The VideoLAN projects generally follow the pattern of providing a list of the different versions of a project, naming each directory after the version they represent e.g. `0.3.0, 0.3.1, 0.3.2, .....`. It's this consistency that make it relatively easy to deal with VideoLAN's multiple projects. However, navigate with a browser to the the _x265_ project directory where, instead of a list of version directories, is a collection of tarballs. Even worse, the _x264_ project directory requires navigation to another _snapshots_ directory before a list of tarball links is found here too.
 
@@ -175,3 +182,45 @@ function extractVersionId(projectId, rawVersion) {
   }
 ```
 Note that the default i.e. "not special" case is just the same as the original extraction code in _check()_ before we started considering the differing presentations of the _x264_ and _x265_ project data.
+
+Our next task is to work out how to extract the version string from a line of data for each of the _x264_ and _x265_ cases. Use _wget_ to obtain the complete data for the _x264_ case; run:
+```
+ wget https://download.videolan.org/pub/videolan/x264/snapshots/   
+```
+Examining the resulting _index.html_ file reveals links to tarballs with names like `x264-snapshot-XXXXXXXX-YYYY.tar.bz2` where XXXXXXXX-YYYY is a datestamp that is used for versioning. Later tarballs have duplicate versions with slightly different names of the form `x264-snapshot-XXXXXXXX-YYYY-stable.tar.bz2`. Since we're only interested in the latest version anyway, we'll use this latter name format to extract the version string. The tarball names sit between `>` and `<` characters so a good overall strategy would be to look for lines containing `stable.tar.bz2<` and for those lines remove all text up to and including `>x264-snapshot-` as well all text from and following `-stable.tar.bz2<`. Test it first at the _node_ command line like this:
+```
+    var line = '<a href="x264-snapshot-20170518-2245-stable.tar.bz2">x264-snapshot-20170518-2245-stable.tar.bz2</a>'
+```
+then search for `-stable.tar.bz2<` with:
+```
+    line.search(/-stable\.tar\.bz2</);
+```
+which will return a number greater than 0 if the search string is found.
+Now test removal of everything up to the datestamp with:
+```
+    line.replace(/.*x264-snapshot-/,"");
+```
+which should return the datestamp and remainder of the line. Now add to the previous regular expression to remove everything after the datestamp with:
+```
+    line.replace(/.*x264-snapshot-|-stable\.tar\.bz2<.*/g,"");
+```
+which returns just the datestamp. We can be confident that these search and replace regular expressions can be used for the _x264_ case, which would now look something like:
+```
+    case 'x264':
+      if (rawVersion.search(/-stable\.tar\.bz2</) > 0 ) {
+          return rawVersion.replace(/^.*>x264-snapshot-|-stable\.tar\.bz2<.*/g, "");
+      }
+      break;
+```
+We now go through a simlar process for the _x265_ case. Remove any existing `index.html` file and then run:
+```
+     wget https://download.videolan.org/pub/videolan/x265/
+```
+The resulting `index.html` file shows a list of lines beginning:
+```
+    <a href="x265_2.1.tar.gz">x265_2.1.tar.gz</a>
+```
+These line will be identifiable by searching for lines containing `>x265_` followed by some numbers and dots, followed by `.tar.gz<` and, having matched that, remove the leading `>x265_` and trailing `.tar.gz<` from the match. Testing this with the _node_ command line:
+
+
+The _x265_ case statement should therefore look something like:
