@@ -220,7 +220,32 @@ The resulting `index.html` file shows a list of lines beginning:
 ```
     <a href="x265_2.1.tar.gz">x265_2.1.tar.gz</a>
 ```
-These line will be identifiable by searching for lines containing `>x265_` followed by some numbers and dots, followed by `.tar.gz<` and, having matched that, remove the leading `>x265_` and trailing `.tar.gz<` from the match. Testing this with the _node_ command line:
-
-
-The _x265_ case statement should therefore look something like:
+Programmatically, these line will be identifiable by searching for lines containing `>x265_` followed by some numbers and dots, followed by `.tar.gz<`. Having found such a line, the version string in it will be revealed by removing everything leading up to and including `>x265_` and also removing the trailing `.tar.gz<` and anything following that from the line. Testing this first at the _node_ command line:
+```
+    var line = '<a href="x265_2.4.tar.gz">x265_2.4.tar.gz</a>'
+```
+Now search the line for a tarball link:
+```
+    line.search(/>x265_[0-9][0-9.]*\.tar\.gz</);
+```
+which, if found, returns a number >= 0. Then try leading and trailing character replacement with:
+```
+    line.replace(/.*x265_|\.tar\.gz<.*/g, "");
+```
+which should return the version string, '2.4' in this case. The _x265_ case statement in the _extractVersionId()_ function should therefore look something like:
+```
+    case 'x265':
+      if (rawVersion.search(/>x265_[0-9][0-9.]*\.tar\.gz</) > 0 ) {
+        return rawVersion.replace(/.*x265_|\.tar\.gz<.*/g, "");
+      }
+      break;
+```
+Try testing the new capabiltiy by adding the _x264_ and _x265_ projects to _PVC_ with:
+```
+    pvc add --project x264 --type videolan --urlbase x264
+```
+and
+```
+    pvc add --project x265 --type videolan --urlbase x265
+```
+If the return from either of these includes `NOTE: latest version is undefined`, it's time to look for typos ...
