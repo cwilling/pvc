@@ -1,4 +1,4 @@
-## Writing new module files to support new repository types
+### Writing new module files to support new repository types
 
 Although the range of repositories already supported by _PVC_'s built in modules may be sufficient for most needs, it's quite possible that additional repository support is needed. This is possible at the user level i.e. without integration into the main _PVC_ application, by the creation of new module files to support other repository types. A repository type is just a label to denote how a particular repository presents its data. GitHub presents its data differently to Sourceforge so we give them different type labels: _github_ and _sourceforge_ respectively. Many repositories host multiple projects and, for purposes of network access, we distinguish between them by a _urlbase_ which is generally the minimum part of the project's url that is needed to distinguish that project from other projects at the same repository. Consider these three project urls:
 ```
@@ -24,6 +24,8 @@ where XXXX is a string of any length representing the new _type_ which the modul
 
 More to come ....
 
+
+See the [example](ModuleTutorialExample_p1.md) for step by step details on creating a module file for _PVC_ to support a new repository type.
 
 ### Example 1. A single project repo
 
