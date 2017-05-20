@@ -25,7 +25,7 @@ where XXXX is a string of any length representing the new _type_ which the modul
 More to come ....
 
 
-See the [example](ModuleTutorialExample_p1.md) for step by step details on creating a module file for _PVC_ to support a new repository type.
+Read this [tutorial example](ModuleTutorialExample_p1.md) for step by step details about creating a module file for _PVC_ to support a new repository type.
 
 ### Example 1. A single project repo
 
