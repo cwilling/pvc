@@ -9,15 +9,13 @@ var check = function (parent, options) {
 
 
   // https request
-//!!!! Set request path !!!!
-  var reqpath = 'download/' + parent.urlbase + '/';
+  var reqpath = 'projects/slackbuildsdirectlinks/files/' + parent.urlbase + '/';
 
   var requestOptions = {
     headers: {
       'User-Agent': 'pvc: Project Version Checker'
     },
-//!!!! Set host name !!!!
-    host: 'XYZ.ABC.ORG',
+    host: 'sourceforge.net',
     port: 443,
     path: '/' + reqpath
   };
@@ -31,10 +29,30 @@ var check = function (parent, options) {
       res_data += chunk;
     });
     response.on('end', function() {
+      res_data = res_data.split(/\r?\n/);
       //console.log(res_data);
 
-//!!!! Process res_data here, leaving version numbers in versions[] !!!!
+      var files;
+      var versions = [];
+      for(var i in res_data) {
+        if (res_data[i].search("net.sf.files") > 0) {
+          //console.log(res_data[i]);
+          var start = res_data[i].indexOf('{');
+          var end = res_data[i].indexOf(';');
+          //console.log(res_data[i].slice(start, end));
+          files = JSON.parse(res_data[i].slice(start, end));
+          break;
+        }
+      }
+      if (files) {
+        var rawVersions = Object.keys(files);
+        //console.log("Raw versions: " + rawVersions);
+        for (var i=0;i<rawVersions.length;i++ ) {
+          versions.push(rawVersions[i].replace(/^[^0-9]*|[^0-9]*$/g, ""));
+        }
+      }
 
+      //console.log("raw versions: " + versions);
       versions.sort( function(a,b) { return naturalCompare(b, a); });
 
       switch (action) {
@@ -74,8 +92,7 @@ var check = function (parent, options) {
   });
 }
 
-//!!!! Rename template_functions !!!!
-template_functions = {
+sbdirectlinks_functions = {
   "check":check
 }
 

@@ -8,7 +8,8 @@ A project of interest is added to the watch list using pvc's *add* command; remo
   - the format of the url base required by the *add* command depends on the repo type:
     - github form is *owner/project name* e.g. cwilling/pvc
     - sourceforge form is *project name/(sub)project name* e.g. qwt/qwt or libvncserver/x11vnc
-    - pypi form is simply the *project name* e.g. Cython
+    - sbdirectlinks form is simply the *project name* e.g. leocad
+    - pypi form is also just the *project name* e.g. Cython
     - hackage form is also the *project name* e.g. hscolour
     - libreoffice form is the release category e.g. libreoffice-fresh or libreoffice-still
     - live555 form is the *project name* i.e. live555
@@ -20,6 +21,7 @@ Examples of *add* command usage for the different repo types are:
   - pvc add --project pvc --type github --urlbase cwilling/pvc
   - pvc add --project x11vnc --type sourceforge --urlbase libvncserver/x11vnc
   - pvc add --project cython --type pypi --urlbase Cython
+  - pvc add --project leocad --type sbdirectlinks --urlbase leocad
   - pvc add --project hscolour --type hackage --urlbase hscolor
   - pvc add --project LibreOffice --type libreoffice --urlbase libreoffice-fresh
   - pvc add --project live555 --type live555 --urlbase live555
