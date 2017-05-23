@@ -31,6 +31,7 @@ var check = function (parent, options) {
       res_data += chunk;
     });
     response.on('end', function() {
+      res_data = res_data.split(/\r?\n/);
       //console.log(res_data);
 
 //!!!! Process res_data here, leaving version numbers in versions[] !!!!
