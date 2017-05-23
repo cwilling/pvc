@@ -48,7 +48,11 @@ var check = function (parent, options) {
         var rawVersions = Object.keys(files);
         //console.log("Raw versions: " + rawVersions);
         for (var i=0;i<rawVersions.length;i++ ) {
-          versions.push(rawVersions[i].replace(/^[^0-9]*|[^0-9]*$/g, ""));
+          //versions.push(rawVersions[i].replace(/^[^0-9]*|[^0-9]*$/g, ""));
+          var extracted = extractVersionId(parent.urlbase, rawVersions[i]);
+          if (extracted) {
+            versions.push(extracted);
+          }
         }
       }
 
@@ -90,6 +94,20 @@ var check = function (parent, options) {
   req.on('error', function(e) {
     console.log("Got error: " + e.message);
   });
+}
+
+function extractVersionId(projectId, rawVersion) {
+  switch (projectId) {
+    case 'libtar':
+        if (rawVersion.search(/libtar-/) == 0) {
+          return rawVersion.replace(/^[^0-9]*|[^0-9]*$/g, "");
+        }
+      break;
+    default:
+        return rawVersion.replace(/^[^0-9]*|[^0-9]*$/g, "");
+      break;
+  }
+  return void 0;
 }
 
 sbdirectlinks_functions = {
