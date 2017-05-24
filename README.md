@@ -4,16 +4,17 @@ PVC maintains a "watch list" of software projects which may be manipulated using
 
 A project of interest is added to the watch list using pvc's *add* command; removed from the list with the *delete* command. The *add* command needs to be supplied with a project name, a repository type and a url base.
   - the project name is chosen arbitrarily by the user but is likely to reflect the actual project name.
-  - the repo type is any of the supported repository types which currently are *github*, *sourceforge*, *pypi*, *freedesktop*, *hackage*, *live555*, *suitesparse*, *vtk* and *libreoffice*. These built in types may be supplemented with additional user defined types by placing a suitably crafted module file in a prearranged user writable directory, from where it is added at run time (for details,see: [https://cwilling.github.io/pvc/](https://cwilling.github.io/pvc/).
+  - the repo type is any of the supported repository types which currently are *github*, *sourceforge*, *pypi*, *freedesktop*, *hackage*, *live555*, *metacpan*, *suitesparse*, *vtk* and *libreoffice*. These built in types may be supplemented with additional user defined types by placing a suitably crafted module file in a prearranged user writable directory, from where it is added at run time (for details,see: [https://cwilling.github.io/pvc/](https://cwilling.github.io/pvc/).
   - the format of the url base required by the *add* command depends on the repo type:
     - github form is *owner/project name* e.g. cwilling/pvc
     - sourceforge form is *project name/(sub)project name* e.g. qwt/qwt or libvncserver/x11vnc
     - sbdirectlinks form is simply the *project name* e.g. leocad
     - pypi form is also just the *project name* e.g. Cython
     - hackage form is also the *project name* e.g. hscolour
-    - freedesktop form is the *project name* i.e. libevdev
+    - freedesktop form is the *project name* e.g. libevdev
     - libreoffice form is the release category e.g. libreoffice-fresh or libreoffice-still
     - live555 form is the *project name* i.e. live555
+    - metacpan form is the *project name (as known at metacpan)* e.g. libnet
     - suitesparse form is the *project name* i.e. suitesparse
     - vtk form is the *project name* i.e. vtk
     - zpaq form is the *project name* i.e. zpaq
@@ -27,6 +28,7 @@ Examples of *add* command usage for the different repo types are:
   - pvc add --project libevdev --type freedesktop --urlbase libevdev
   - pvc add --project LibreOffice --type libreoffice --urlbase libreoffice-fresh
   - pvc add --project live555 --type live555 --urlbase live555
+  - pvc add --project perl-libnet --type live555 --urlbase libnet
   - pvc add --project suitesparse --type suitesparse --urlbase suitesparse
   - pvc add --project vtk --type vtk --urlbase vtk
   - pvc add --project zpaq --type zpaq --urlbase zpaq
