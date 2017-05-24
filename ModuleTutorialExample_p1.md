@@ -60,12 +60,7 @@ Now skip to the last item, renaming the _template\_functions_  object (to _vlc\_
     vlc_functions = {
 ```
 
-Lets return to the item where we extract the version number, labelled _Process res_data here, leaving version numbers in versions[]_. The requested data has been downloaded as a stream of bytes which is now available to us as _res_data_. We convert that data into an array of lines by adding:
-```
-    res_data = res_data.split(/\r?\n/);
-```
-
-We now need to loop through all the available lines trying to match potential version strings just as we did above at the _node_ command line. For any matches that we find, we remove extraneous leading and trailing characters and add the clean version string to the already declared _versions_ array. Do this by adding:
+Lets return to the item where we extract the version number, labelled _Process res_data here, leaving version numbers in versions[]_. The requested data has been downloaded as a stream of bytes which is now available to us as _res_data_ which is converted into an array of lines by: `res_data = res_data.split(/\r?\n/);`. This enables us to easily loop through all the available lines trying to match potential version strings just as we did above at the _node_ command line. For any matches that we find, we remove extraneous leading and trailing characters and add the clean version string to the already declared _versions_ array. Do this by adding:
 ```
     for (var i=0;i<res_data.length;i++) {
        //console.log(res_data[i]);
@@ -77,7 +72,7 @@ We now need to loop through all the available lines trying to match potential ve
     }
 ```    
 
-All having gone well, the new module file is ready to go so save it and exit the editor. To check that the new module is recognised, run:
+All having gone well, the new module file is ready to go so save it and exit the editor. To first check that the new module is recognised, run:
 ```
     pvc config
 ```
