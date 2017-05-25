@@ -1,4 +1,4 @@
-**PVC** is a command line driven asynchronous Project Version Checker. It enables checking of the latest versions of various software projects that may be held at different repositories e.g. github, sourceforge, pypi, etc. In addition to support of a range of such common public repositories, support for additional repos may be added by the user via a plugin system.
+**PVC** is a command line driven asynchronous Project Version Checker. It enables checking of the latest versions of various software projects that may be held at different repositories e.g. github, sourceforge, pypi, metacpan, etc. In addition to support of a range of such common public repositories, support for additional repos may be added by the user via a plugin system.
 
 PVC maintains a "watch list" of software projects which may be manipulated using the commands summarised below. Any or all of the projects can be queried for their version status using the *list* and *show* commands (for "local" status) and the *check* command for the latest online status of the project(s). This provides a simple mechanism to determine whether any of a number of upstream sources has released a new version.
 
