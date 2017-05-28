@@ -3,10 +3,12 @@
 const events = require('events');
 const fs = require('fs')
 const os = require('os');
+const program = require('commander');
 
 pvcLocalDir = os.homedir() + '/.local/share/pvc'; // global for use in pvcWatcher.js
 const Watcher = require("./pvcWatcher");
 
+const pvcCommands = ["-h", "--help", "add", "delete", "show", "list", "check", "update", "config"];
 var myArgs = process.argv.slice(2);
 var pvcConfig = {};
 var action;
@@ -183,212 +185,228 @@ function pvcSaveConfiguration (config) {
   });
 }
 
-
-
-function parseCommand () {
-  if ( myArgs.length == 0 ) {
-    usage();
-    process.exit(0);
-  } else {
-    action = myArgs[0];
-  }
-    siteList = myArgs.slice(1);
-    //console.log("Action: " + action + " URls: " + siteList);
-    switch (action) {
-      case 'add':
-        var ret = siteList.indexOf("--project");
-        if ( ret < 0 ) {
-          console.log("Need --project name to continue \"add\" command");
-          return;
-        }
-        var newName = siteList[ret + 1];
-        console.log("Adding project: " + newName);
-        var ret = siteList.indexOf("--type");
-        if ( ret < 0 ) {
-          console.log("Need --type (github, sourceforge, ...) to continue \"add\" command");
-          process.exit(1);
-        }
-        var newType = siteList[ret + 1];
-        console.log("Adding project retrieval type: " + newType);
-        var ret = siteList.indexOf("--urlbase");
-        if ( ret < 0 ) {
-          console.log("Need --urlbase urlbase to continue \"add\" command");
-          process.exit(1);
-        }
-        var newBaseurl = siteList[ret + 1];
-        console.log("Adding project urlbase: " + newBaseurl);
-
-        var newWatcher = new Watcher({"project":newName,"type":newType,"urlbase":newBaseurl,"version":"0.0"});
-
-        // Check that newWatcher is valid
-        // If so, it sends an IsValidWatcher event
-        // triggering its push onto watchers array.
-        newWatcher.check({'action':'validate','config':pvcConfig});
-
-        break;
-      case 'delete':
-      case 'remove':
-        var ret = siteList.indexOf("--project");
-        if ( ret < 0 ) {
-          console.log("Need --project name to continue \"remove\" command");
-          process.exit(3);
-          return;
-        }
-        var removeName = siteList[ret + 1];
-        console.log("Removing project: " + removeName);
+/* Commands & options
+*/
+program.command("add")
+  .description('add project to watch list')
+  .option("-p, --project <name>","project name")
+  .option("-t, --type <type>","repository type")
+  .option("-u, --urlbase [urlbase]","url base")
+  .action( function (cmd) {
+    if (! cmd.project) {
+      throw new Error('--project required');
+    }
+    if (! cmd.type) {
+      throw new Error('--type required');
+    }
+    if (! cmd.urlbase) {
+       cmd.urlbase = cmd.project
+    }
+    var newWatcher = new Watcher({"project":cmd.project,"type":cmd.type,"urlbase":cmd.urlbase,"version":"0.0"});
+    // Now check that newWatcher is valid
+    // If so, it sends an IsValidWatcher event
+    // triggering its push onto watchers array.
+    newWatcher.check({'action':'validate','config':pvcConfig});
+  });
+program.command("delete [projs...]")
+  .description('check details of named (or all) projects')
+  .option("-p, --project","delete named project(s)")
+  .alias("remove")
+  .action( function (projs) {
+    console.log("Removing project: " + projs);
+    if (program.args[1].project) {
+      projs.push(program.args[1].project);
+    }
+    if (projs.length > 0) {
+      projs.forEach( function (item, index) {
         var index = watchers.findIndex( function (el) {
-          return el.project == removeName;
+          return el.project == item;
         });
         if (index < 0 ) {
-          console.log("Couldn't find a project to remove named: " + removeName);
+          console.log("Couldn't find a project to remove named: " + item);
           process.exit(3);
         }
         watchers.splice(index, 1);
         //console.log(watchers);
         eventEmitter.emit("SaveWatchers");
-        break;
-      case 'list':
-        if ( watchers.length == 0) {
-          console.log("No entries found");
-        } else {
-          watchers.forEach( function(item, index) {
-            console.log(item.project + "  " + item.version);
-          });
-        }
-        process.exit(0);
-        break;
-      case 'show':
-        // Show contents of watchlist
-        var showName = void 0;
-        var ret = siteList.indexOf("--project");
-        if ( ret < 0 ) {
-          console.log("--project not given - assuming \"show all projects\"");
-        }
-        var showName = siteList[ret + 1];
-        if (showName != undefined ) {
-          console.log("Showing project: " + showName);
-          var index = watchers.findIndex( function (el) {
-            return el.project == showName;
-          });
-          if (index < 0 ) {
-            console.log("Couldn't find a project to show named: " + showName);
-            process.exit(3);
-          }
-          console.log(JSON.stringify(watchers[index], null, 1));
-        } else {
-          watchers.forEach( function (item, index) {
-            console.log(JSON.stringify(item, null, 1));
-          });
-        }
-        process.exit(0);
-        break;
-      case 'check':
-        // Compare local version with newly retrieved version
-        var checkName = void 0;
-        var ret = siteList.indexOf("--project");
-        if ( ret < 0 ) {
-          console.log("--project not given - assuming \"check all projects\"");
-        }
-        var checkName = siteList[ret + 1];
-        if (checkName == undefined ) {
-          checkCounter.size = watchers.length;
-          checkCounter.counter = 0;
-          console.log("Checking all " + checkCounter.size + " projects");
-          watchers.forEach( function(item, index) {
-            item.check({'config':pvcConfig});
-          });
-          break;
-        }
-        console.log("Checking project: " + checkName);
+      });
+    } else {
+      console.log("Can't DELETE all. Please specify projects to delete");
+    }
+
+  });
+program.command("show [projects...]")
+  .description('show details of named (or all) projects')
+  .option("-p, --project <more...>","show details of named project(s)")
+  .action( function (cmd) {
+    if (program.args[1].project) {
+      cmd.push(program.args[1].project);
+    }
+    if (cmd.length > 0) {
+      cmd.forEach(function (item, index) {
+        //console.log("SHOW: " + item);
         var index = watchers.findIndex( function (el) {
-          return el.project == checkName;
+          return el.project == item;
         });
         if (index < 0 ) {
-          console.log("Couldn't find a project to check named: " + checkName);
+          console.log("Couldn't find a project to show named: " + item);
+          process.exit(3);
+        }
+        console.log(JSON.stringify(watchers[index], null, 1));
+      });
+    } else {
+      //console.log("SHOW: all");
+      watchers.forEach( function (item, index) {
+        console.log(JSON.stringify(item, null, 1));
+      });
+    }
+    process.exit(0);
+  });
+program.command("list")
+  .description('lists known projects')
+  .action( function (cmd) {
+    if ( watchers.length == 0) {
+      console.log("No entries found");
+    } else {
+      watchers.forEach( function(item, index) {
+        console.log(item.project + "  " + item.version);
+      });
+    }
+    process.exit(0);
+  });
+program.command("check [projects...]")
+  .description('check versions of named (or all) projects')
+  .option("-p, --project <more...>","check versions of named project(s)")
+  .action( function (cmd) {
+    //console.log("cmd = " + cmd);
+    if (program.args[1].project) {
+      cmd.push(program.args[1].project);
+    }
+    if (cmd.length > 0) {
+      cmd.forEach(function (item, index) {
+        //console.log("CHECK: " + item);
+        var index = watchers.findIndex( function (el) {
+          return el.project == item;
+        });
+        if (index < 0 ) {
+          console.log("Couldn't find a project to check named: " + item);
           process.exit(3);
         }
         checkCounter.size = 1;
         checkCounter.counter = 0;
-        console.log("Checking single " + checkCounter.size + " project");
+        //console.log("Checking single " + checkCounter.size + " project");
         watchers[index].check({'action':'check','config':pvcConfig});
-        break;
-      case 'update':
-        // Update local version with newly retrieved version
-        // OR a version stipulated at command line
-        var ret = siteList.indexOf("--project");
-        if ( ret < 0 ) {
-          console.log("Need --project name to continue \"update\" command");
-          return;
-        }
-        var projectName = siteList[ret + 1];
-        var index = watchers.findIndex( function (el) {
-          return el.project == projectName;
-        });
-        if (index < 0 ) {
-          console.log("Couldn't find a project to update named: " + projectName);
-          process.exit(3);
-        }
-        console.log("Updating project: " + projectName);
-
-        // Optional version string
-        var ret = siteList.indexOf("--version");
-        if ( ret < 0 ) {
-          console.log("No --version supplied so use remote version");
-          checkCounter.size = 1;
-          checkCounter.counter = 0;
-          console.log("Updating single " + checkCounter.size + " project");
-          watchers[index].check({'action':'update','config':pvcConfig});
-          return;
-        }
-        var newVersion = siteList[ret + 1];
-        console.log("Updating " + watchers[index].project + " to version " + newVersion);
-        eventEmitter.emit("UpdateWatcher", watchers[index], newVersion);
-        break;
-      case 'config':
-        var configType = "";
-        var ret = siteList.indexOf("--add");
-        if ( ret < 0 ) {
-          ret = siteList.indexOf("--delete");
-          if ( ret < 0 ) {
-            ret = siteList.indexOf("--show");
-            if ( ret < 0 ) {
-              // Missing option for config command => show pertinent pvc information
-              //console.log("PVC - Project Version Checker \u00A9Copyright 2017 Christoph Willing");
-              //console.log("XXXX pvcConfig: " + JSON.stringify(pvcConfig,null,1));
-              console.log("PVC - Project Version Checker");
-              console.log("       watched projects file: " + pvcConfig["pvcWatchListFile"]);
-              console.log("     user configuration file: " + pvcConfig["pvcConfigFile"]);
-              console.log("   available retrieval types: " + pvcRetrievalTypes);
-              process.exit(0);
-            } else {
-              configType = "show";
-            }
-          } else {
-            configType = "delete";
-          }
-        } else {
-          configType = "add";
-        }
-        console.log("Config action: " + configType);
-        var newConfigEntry = siteList[ret + 1];
-        // newConfigEntry format = category,name:value,token:value etc.,
-        //                      e.g. github,name:chris.willing@xyz,token:ea9c382eab81fda
-        if (newConfigEntry ) {
-          setConfigEntry(configType, newConfigEntry);
-        } else {
-          if (configType == "show") {
-            setConfigEntry(configType, null);
-          } else {
-            console.log("No configuration item to : " + configType);
-          }
-        }
-        break
-      default:
-        console.log("Unknown command " + action);
-        return;
+      });
+    } else {
+      console.log("CHECK: all");
+      checkCounter.size = watchers.length;
+      checkCounter.counter = 0;
+      console.log("Checking all " + checkCounter.size + " projects");
+      watchers.forEach( function(item, index) {
+        item.check({'config':pvcConfig});
+      });
+    }
+  });
+program.command("update")
+  .description("Update a  project's version")
+  .option("-p, --project <project>","Name of project to update")
+  .option("-v, --version <version>", "Specify the new version")
+  .action( function (cmd) {
+    var projectName, newVersion;
+    //console.log(typeof(cmd));
+    if (typeof(cmd) === 'object') {
+      if (cmd.project) {
+        //console.log(cmd.project);
+        projectName = cmd.project;
+      } else {
+        console.log("Need a project to update");
+        process.exit(1);
+      }
+      if (cmd.version && typeof(cmd.version) === 'string') {
+        //console.log(cmd.version);
+        newVersion = cmd.version;
+      } else {
+        console.log("Using network to update version");
+      }
+    } else {
+      //console.log(cmd);
+      projectName = cmd;
+      if (typeof(program.args[1].version) === 'string') {
+        //console.log(program.args[1].version);
+        newVersion = program.args[1].version;
+      } else {
+        console.log("Using network to update version");
+      }
+    }
+    if (!projectName ) {
+      console.log("Need a project name to update");
+      process.exit(1);
     }
 
+    var index = watchers.findIndex( function (el) {
+      return el.project == projectName;
+    });
+    if (index < 0 ) {
+      console.log("Couldn't find a project to update named: " + projectName);
+      process.exit(3);
+    }
+    console.log("Updating project: " + projectName);
+
+    if (!newVersion) {
+      console.log("No --version supplied so use remote version");
+      checkCounter.size = 1;
+      checkCounter.counter = 0;
+      //console.log("Updating single " + checkCounter.size + " project");
+      watchers[index].check({'action':'update','config':pvcConfig});
+      return;
+    }
+    console.log("Updating " + watchers[index].project + " to version " + newVersion);
+    eventEmitter.emit("UpdateWatcher", watchers[index], newVersion);
+  });
+program.command("config")
+  .description('add, delete or show configuration items')
+  .option("-a, --add <item>","Add a configuration item")
+  .option("-d, --delete <item>","Delete a configuration item")
+  .option("-s, --show [item]","Show a configuration item")
+  .action( function (cmd) {
+    if (cmd.add) {
+      console.log("ADD config item: " + cmd.add);
+      setConfigEntry("add", cmd.add);
+    } else if (cmd.delete) {
+      console.log("DELETE config item: " + cmd.delete);
+      setConfigEntry("delete", cmd.delete);
+    } else if (cmd.show) {
+      if (typeof(cmd.show) === "boolean" ) {
+        console.log("SHOW config item: (No item supplied)" );
+        setConfigEntry("show", null);
+      } else {
+        console.log("SHOW config item: " + cmd.show);
+        setConfigEntry("show", cmd.show);
+      }
+    } else {
+      console.log("UNKNOWN config request (Need: --add <item>| --delete <item>| --show <item>)");
+      // Missing option for config command => show pertinent pvc information
+      // but don't just show everything in case anything sensitive (passwords, auth keys)
+      //console.log("XXXX pvcConfig: " + JSON.stringify(pvcConfig,null,1));
+      //console.log("PVC - Project Version Checker \u00A9Copyright 2017 Christoph Willing");
+      console.log("PVC - Project Version Checker");
+      console.log("       watched projects file: " + pvcConfig["pvcWatchListFile"]);
+      console.log("     user configuration file: " + pvcConfig["pvcConfigFile"]);
+      console.log("   available retrieval types: " + pvcRetrievalTypes);
+      process.exit(0);
+    }
+  });
+
+function parseCommand () {
+  if (pvcCommands.indexOf(process.argv[2]) > -1) {
+    //console.log("Known command (" + process.argv[2] + ")");
+    program.parse(process.argv);
+  } else {
+    console.log("UNknown command (" + process.argv[2] + ")");
+    process.exit(1);
+  }
 }
+
 
 function setConfigEntry (mode, entry) {
   console.log(mode + "ing configuration item: " + entry);
