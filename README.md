@@ -86,3 +86,10 @@ In particular:
 - pvc config [ --add item | --delete item | --show [item] ]
 
 where a *config* item consists of a repo type field, optionally followed by further comma separated fields containing key:value pairs.
+
+#### Dependencies
+*PVC* requires the *commander* module for command line parsing. It can be installed for PVC by running the folowing command from the PVC directory:
+```
+    npm install commander
+```
+
