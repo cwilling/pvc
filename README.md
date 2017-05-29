@@ -95,7 +95,7 @@ In case of problems, all commands accept a -d | --debug option to output additio
 
 
 #### Dependencies
-*PVC* requires the *commander* module for command line parsing. It can be installed for PVC by running the folowing command from the PVC directory:
+*PVC* requires the [commander module](https://www.npmjs.com/package/commander) for command line parsing. It can be installed for PVC by running the folowing command from the PVC directory:
 ```
     npm install commander
 ```
