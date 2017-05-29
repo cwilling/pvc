@@ -4,11 +4,11 @@ const common = require(pvcStartDir + '/pvcCommon.js');
 var check = function (parent, options) {
   var action = options.action || 'check';
   var config = options.config || null;
-  //console.log("check() for project " + parent.project);
+  pvcDebug("check() for project " + parent.project);
 
   // http request
   var reqpath = parent.urlbase;
-  //console.log("reqpath = " + reqpath);
+  pvcDebug("reqpath = " + reqpath);
 
   var requestOptions = {
     headers: {
@@ -17,13 +17,13 @@ var check = function (parent, options) {
     host: 'www.vtk.org',
     path: '/download/'
   };
-  //console.log("Request: " + JSON.stringify(requestOptions, null, 1));
+  pvcDebug("Request: " + JSON.stringify(requestOptions, null, 1));
 
   var req = http.get(requestOptions, function(response) {
     // handle the response
     var res_data = '';
     response.on('data', function(chunk) {
-      //console.log(".....chunk");
+      pvcDebug(".....chunk");
       res_data += chunk;
     });
     response.on('end', function() {
@@ -32,11 +32,11 @@ var check = function (parent, options) {
       var version;
       for(var i in res_data) {
           if (res_data[i].search("latest") > 0) {
-              //console.log("Found " + res_data[i]);
+              pvcDebug("Found " + res_data[i]);
               var start = res_data[i].indexOf('(');
               var end = res_data[i].indexOf(')');
               version = res_data[i].slice(start+1, end);
-              //console.log("version = " + version);
+              pvcDebug("version = " + version);
               break;
           }
       }
@@ -50,7 +50,7 @@ var check = function (parent, options) {
           break;
         case 'validate':
           if (! version) {
-            //console.log("ERROR! \"Latest Release\" not found in " + res_data);
+            pvcDebug("ERROR! \"Latest Release\" not found in " + res_data);
             eventEmitter.emit('NotValidWatcher', parent);
           } else {
             if ( version != parent.version ) {

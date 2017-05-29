@@ -4,13 +4,13 @@ const common = require(pvcStartDir + '/pvcCommon.js');
 var check = function (parent, options) {
   var action = options.action || 'check';
   var config = options.config || null;
-  //console.log("check() for project " + parent.project);
+  pvcDebug("check() for project " + parent.project);
 
   // https request
   var acc = parent.urlbase.substr(0, parent.urlbase.indexOf('/'));
   var proj = parent.urlbase.substr(parent.urlbase.indexOf('/') + 1);
   var reqpath = 'projects/' + acc + '/files/' + proj + '/';
-  //console.log("reqpath = " + reqpath);
+  pvcDebug("reqpath = " + reqpath);
 
   var requestOptions = {
     headers: {
@@ -25,34 +25,34 @@ var check = function (parent, options) {
   if (config.sourceforge && config.sourceforge.auth) {
     requestOptions.headers['Authorization'] = config.sourceforge.auth;
   }
-  //console.log("Request: " + requestOptions.path);
+  pvcDebug("Request: " + requestOptions.path);
 
   var req = https.get(requestOptions, function(response) {
     // handle the response
     var res_data = '';
     response.on('data', function(chunk) {
-      //console.log(".....chunk");
+      pvcDebug(".....chunk");
       res_data += chunk;
     });
     response.on('end', function() {
       res_data = res_data.split(/\r?\n/);
-      //console.log(res_data);
+      pvcDebug(res_data);
 
       var files;
       var versions = [];
       for(var i in res_data) {
           if (res_data[i].search("net.sf.files") > 0) {
-              //console.log(res_data[i]);
+              pvcDebug(res_data[i]);
               var start = res_data[i].indexOf('{');
               var end = res_data[i].indexOf(';');
-              //console.log(res_data[i].slice(start, end));
+              pvcDebug(res_data[i].slice(start, end));
               files = JSON.parse(res_data[i].slice(start, end));
               break;
           }
       }
       if (files) {
         var rawVersions = Object.keys(files);
-        //console.log("Raw versions: " + rawVersions);
+        pvcDebug("Raw versions: " + rawVersions);
         for (var i=0;i<rawVersions.length;i++ ) {
           versions.push(rawVersions[i].replace(/^[^0-9]*/, ""));
         }
@@ -69,7 +69,7 @@ var check = function (parent, options) {
           break;
         case 'validate':
           if (! versions) {
-            console.log("ERROR! net.sf.files not found in " + res_data);
+            pvcDebug("net.sf.files not found in " + res_data, "PVC_ERROR");
             eventEmitter.emit('NotValidWatcher', parent);
           } else {
             if ( versions[0] != parent.version ) {

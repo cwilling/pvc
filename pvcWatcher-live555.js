@@ -4,11 +4,11 @@ const common = require(pvcStartDir + '/pvcCommon.js');
 var check = function (parent, options) {
   var action = options.action || 'check';
   var config = options.config || null;
-  //console.log("check() for project " + parent.project);
+  pvcDebug("check() for project " + parent.project);
 
   // http request
   var reqpath = parent.urlbase;
-  //console.log("reqpath = " + reqpath);
+  pvcDebug("reqpath = " + reqpath);
 
   var requestOptions = {
     headers: {
@@ -18,12 +18,12 @@ var check = function (parent, options) {
     path: '/liveMedia/public/'
   };
 
-  //console.log("Request: " + requestOptions.path);
+  pvcDebug("Request: " + requestOptions.path);
   var req = http.get(requestOptions, function(response) {
     // handle the response
     var res_data = '';
     response.on('data', function(chunk) {
-      //console.log(".....chunk");
+      pvcDebug(".....chunk");
       res_data += chunk;
     });
     response.on('end', function() {
@@ -31,12 +31,12 @@ var check = function (parent, options) {
 
       var version;
       for(var i in res_data) {
-        //console.log("res_data: " + res_data);
+        pvcDebug("res_data: " + res_data);
         var matched = res_data[i].match(/live\.[0-9.]*/);
-        //console.log("matched: " + matched);
+        pvcDebug("matched: " + matched);
         if (matched) {
           version = matched[0].replace(/^[^0-9]*|\.$/g, '');
-          //console.log("version: " + version);
+          pvcDebug("version: " + version);
         }
         if (version) break;
       }
@@ -50,7 +50,7 @@ var check = function (parent, options) {
           break;
         case 'validate':
           if (! version) {
-            //console.log("ERROR! \"Latest Release\" not found in " + res_data);
+            pvcDebug("ERROR! \"Latest Release\" not found in " + res_data);
             eventEmitter.emit('NotValidWatcher', parent);
           } else {
             if ( version != parent.version ) {

@@ -9,7 +9,7 @@ var check = function (parent, options) {
   if (config.github && config.github.username) {
     auth = "Basic " + new Buffer(config.github.username + ":" + config.github.token).toString("base64");
   }
-  //console.log("check() for project " + parent.project + " with auth = " + auth);
+  pvcDebug("check() for project " + parent.project + " with auth = " + auth);
 
       // https request
       var reqpath = 'pypi/' + parent.urlbase + '/json';
@@ -24,23 +24,23 @@ var check = function (parent, options) {
       if (auth) {
         requestOptions.headers['Authorization'] = auth;
       }
-      //console.log("Request: " + requestOptions.path);
+      pvcDebug("Request: " + requestOptions.path);
       var req = https.get(requestOptions, function(response) {
         // handle the response
         var res_data = '';
         response.on('data', function(chunk) {
-          //console.log(".....chunk");
+          pvcDebug(".....chunk");
           res_data += chunk;
         });
         response.on('end', function() {
-          //console.log(res_data);
+          pvcDebug(res_data);
           var page_data = JSON.parse(res_data);
           var versions = [];
           if (page_data) {
             var releases = Object.keys(page_data.releases);
             for (var i=0;i<releases.length;i++) {
               // Remove non-numeric leading characters before sorting
-              //console.log(releases[i]);
+              pvcDebug(releases[i]);
               versions.push(releases[i].replace(/^[^0-9]*/, ""));
             }
           }
@@ -56,7 +56,7 @@ var check = function (parent, options) {
               break
             case 'validate':
               if (! versions) {
-                console.log("ERROR! Request returned: " + res_data);
+                pvcDebug("ERROR! Request returned: " + res_data, "PVC_ERROR");
                 eventEmitter.emit('NotValidWatcher', parent);
               } else {
                 if (versions[0] != parent.version) {

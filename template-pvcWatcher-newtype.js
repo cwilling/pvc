@@ -21,7 +21,7 @@ var check = function (parent, options) {
     port: 443,
     path: '/' + reqpath
   };
-  //console.log("Request: " + requestOptions.path);
+  pvcDebug("Request: " + requestOptions.path);
 
   var req = https.get(requestOptions, function(response) {
     // handle the response
@@ -32,7 +32,7 @@ var check = function (parent, options) {
     });
     response.on('end', function() {
       res_data = res_data.split(/\r?\n/);
-      //console.log(res_data);
+      //pvcDebug(res_data);
 
 //!!!! Process res_data here, leaving version numbers in versions[] !!!!
 
@@ -48,7 +48,7 @@ var check = function (parent, options) {
           break
         case 'validate':
           if (! versions) {
-            console.log("ERROR! Request returned: " + res_data);
+            pvcDebug("Request returned: " + res_data, 'PVC_ERROR');
             eventEmitter.emit('NotValidWatcher', parent);
           } else {
             if (versions[0] != parent.version) {

@@ -4,11 +4,11 @@ const common = require(pvcStartDir + '/pvcCommon.js');
 var check = function (parent, options) {
   var action = options.action || 'check';
   var config = options.config || null;
-  //console.log("check() for project " + parent.project);
+  pvcDebug("check() for project " + parent.project);
 
   // http request
   var reqpath = parent.urlbase;
-  //console.log("reqpath = " + reqpath);
+  pvcDebug("reqpath = " + reqpath);
 
   var requestOptions = {
     headers: {
@@ -17,7 +17,7 @@ var check = function (parent, options) {
     host: 'mattmahoney.net',
     path: '/dc/zpaq.html'
   };
-  //console.log("Request: " + requestOptions.path);
+  pvcDebug("Request: " + requestOptions.path);
 
   var req = http.get(requestOptions, function(response) {
     // handle the response
@@ -30,10 +30,10 @@ var check = function (parent, options) {
 
       var versions = [];
       for(var i in res_data) {
-        //console.log("res_data: " + res_data);
+        //pvcDebug("res_data: " + res_data);
         var matched = res_data[i].match(/>zpaq v[0-9.]*[0-9]</);
         if (matched) {
-          //console.log("matched: " + matched[0]);
+          pvcDebug("matched: " + matched[0]);
           versions.push(matched[0].replace(">zpaq v", "").replace("<", ""));
         }
       }
@@ -49,7 +49,7 @@ var check = function (parent, options) {
           break;
         case 'validate':
           if (! versions) {
-            //console.log("ERROR! \"Latest Release\" not found in " + res_data);
+            pvcDebug("\"Latest Release\" not found in " + res_data,'PVC_ERROR');
             eventEmitter.emit('NotValidWatcher', parent);
           } else {
             if ( versions[0] != parent.version ) {

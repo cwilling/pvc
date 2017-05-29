@@ -7,7 +7,7 @@ var check = function (parent, options) {
 
   // http request
   var reqpath = parent.urlbase;
-  //console.log("reqpath = " + reqpath);
+  pvcDebug("reqpath = " + reqpath);
 
   var requestOptions = {
     headers: {
@@ -16,13 +16,13 @@ var check = function (parent, options) {
     host: 'faculty.cse.tamu.edu',
     path: '/davis/SuiteSparse/'
   };
-  //console.log("Request: " + requestOptions.path);
+  pvcDebug("Request: " + requestOptions.path);
 
   var req = http.get(requestOptions, function(response) {
     // handle the response
     var res_data = '';
     response.on('data', function(chunk) {
-      //console.log(".....chunk");
+      pvcDebug(".....chunk");
       res_data += chunk;
     });
     response.on('end', function() {
@@ -30,10 +30,10 @@ var check = function (parent, options) {
 
       var versions = [];
       for(var i in res_data) {
-        //console.log("res_data: " + res_data);
+        pvcDebug("res_data: " + res_data);
         var matched = res_data[i].match(/SuiteSparse-[0-9.]*[0-9]\.tar/);
         if (matched) {
-          //console.log("matched: " + matched[0]);
+          pvcDebug("matched: " + matched[0]);
           versions.push(matched[0].replace("SuiteSparse-", "").replace(".tar", ""));
         }
       }
@@ -49,7 +49,7 @@ var check = function (parent, options) {
           break;
         case 'validate':
           if ( ! versions ) {
-            //console.log("ERROR! \"Latest Release\" not found in " + res_data);
+            pvcDebug("\"Latest Release\" not found in " + res_data,"PVC_ERROR");
             eventEmitter.emit('NotValidWatcher', parent);
           } else {
             if ( versions[0] != parent.version ) {

@@ -4,11 +4,11 @@ const common = require(pvcStartDir + '/pvcCommon.js');
 var check = function (parent, options) {
   var action = options.action || 'check';
   var config = options.config || null;
-  //console.log("check() for project " + parent.project);
+  pvcDebug("check() for project " + parent.project);
 
   // https request
   var reqpath = parent.urlbase;
-  //console.log("reqpath = " + reqpath);
+  pvcDebug("reqpath = " + reqpath);
 
   var requestOptions = {
     headers: {
@@ -18,13 +18,13 @@ var check = function (parent, options) {
     port: 443,
     path: '/package/' + parent.urlbase
   };
-  //console.log("Request: " + requestOptions.path);
+  pvcDebug("Request: " + requestOptions.path);
 
   var req = https.get(requestOptions, function(response) {
     // handle the response
     var res_data = '';
     response.on('data', function(chunk) {
-      //console.log(".....chunk");
+      pvcDebug(".....chunk");
       res_data += chunk;
     });
     response.on('end', function() {
@@ -33,9 +33,9 @@ var check = function (parent, options) {
       var version;
       for(var i in res_data) {
           if (res_data[i].search("<strong>") > 0) {
-              //console.log("Found " + res_data[i]);
+              pvcDebug("Found " + res_data[i]);
               version = res_data[i].match(/strong>[0-9.]*<\/strong/)[0].replace('strong>','').replace('</strong','');
-              //console.log("version = " + version);
+              pvcDebug("version = " + version);
               break;
           }
       }
@@ -50,7 +50,7 @@ var check = function (parent, options) {
           break;
         case 'validate':
           if (! version) {
-            //console.log("ERROR! \"Latest Release\" not found in " + res_data);
+            pvcDebug("ERROR! \"Latest Release\" not found in " + res_data);
             eventEmitter.emit('NotValidWatcher', parent);
           } else {
             if ( version != parent.version ) {

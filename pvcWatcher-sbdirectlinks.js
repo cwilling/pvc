@@ -19,34 +19,34 @@ var check = function (parent, options) {
     port: 443,
     path: '/' + reqpath
   };
-  //console.log("Request: " + requestOptions.path);
+  pvcDebug("Request: " + requestOptions.path);
 
   var req = https.get(requestOptions, function(response) {
     // handle the response
     var res_data = '';
     response.on('data', function(chunk) {
-      //console.log(".....chunk");
+      pvcDebug(".....chunk");
       res_data += chunk;
     });
     response.on('end', function() {
       res_data = res_data.split(/\r?\n/);
-      //console.log(res_data);
+      pvcDebug(res_data);
 
       var files;
       var versions = [];
       for(var i in res_data) {
         if (res_data[i].search("net.sf.files") > 0) {
-          //console.log(res_data[i]);
+          pvcDebug(res_data[i]);
           var start = res_data[i].indexOf('{');
           var end = res_data[i].indexOf(';');
-          //console.log(res_data[i].slice(start, end));
+          pvcDebug(res_data[i].slice(start, end));
           files = JSON.parse(res_data[i].slice(start, end));
           break;
         }
       }
       if (files) {
         var rawVersions = Object.keys(files);
-        //console.log("Raw versions: " + rawVersions);
+        pvcDebug("Raw versions: " + rawVersions);
         for (var i=0;i<rawVersions.length;i++ ) {
           //versions.push(rawVersions[i].replace(/^[^0-9]*|[^0-9]*$/g, ""));
           var extracted = extractVersionId(parent.urlbase, rawVersions[i]);
@@ -56,7 +56,7 @@ var check = function (parent, options) {
         }
       }
 
-      //console.log("raw versions: " + versions);
+      pvcDebug("raw versions: " + versions);
       versions.sort( function(a,b) { return naturalCompare(b, a); });
 
       switch (action) {
@@ -69,7 +69,7 @@ var check = function (parent, options) {
           break
         case 'validate':
           if (! versions) {
-            console.log("ERROR! Request returned: " + res_data);
+            pvcDebug("ERROR! Request returned: " + res_data, "PVC_ERROR");
             eventEmitter.emit('NotValidWatcher', parent);
           } else {
             if (versions[0] != parent.version) {

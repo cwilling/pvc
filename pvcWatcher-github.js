@@ -19,7 +19,7 @@ var check = function (parent, options) {
   if (config.github && config.github.username) {
     auth = "Basic " + new Buffer(config.github.username + ":" + config.github.token).toString("base64");
   }
-  //console.log("check() for project " + parent.project + " with auth = " + auth);
+  pvcDebug("check() for project " + parent.project + " with auth = " + auth);
 
       var nextPage = 1;
       versions = [];
@@ -37,7 +37,7 @@ var check = function (parent, options) {
       if (auth) {
         requestOptions.headers['Authorization'] = auth;
       }
-      //console.log("Request: " + requestOptions.path);
+      pvcDebug("Request: " + requestOptions.path);
 
       requestIterator({"action":action,"versions":versions,"parent":parent}, requestOptions, composeData);
 
@@ -46,12 +46,12 @@ var check = function (parent, options) {
 /* Expect work function to be requestTagData(), callback function to be composeData()
 */
 function requestIterator (options, requestOptions, callback) {
-//  console.log("requestIterato()");
+  pvcDebug("requestIterator()");
 
   function report(newVersions, nextUrl) {
 
     newVersions.forEach( function (item, index) {
-      //console.log("Adding version: " + item);
+      pvcDebug("Adding version: " + item);
       options.versions.push(item);
     });
     if ( "path" in nextUrl) {
@@ -59,7 +59,7 @@ function requestIterator (options, requestOptions, callback) {
       requestOptions.host = nextUrl.host;
       requestOptions.path = nextUrl.path;
       requestTagData(options.parent.urlbase, requestOptions, report);
-    //  console.log("Next request options: " + JSON.stringify(requestOptions));
+      pvcDebug("Next request options: " + JSON.stringify(requestOptions));
     } else {
       callback(options.action, options.versions, options.parent);
     }
@@ -69,40 +69,33 @@ function requestIterator (options, requestOptions, callback) {
 
 
 function requestTagData (projectId, requestOptions, reportCallback) {
-  //console.log("requestTagData() for " + projectId);
+  pvcDebug("requestTagData() for " + projectId);
   var nextUrl = {};
 
   var req = https.get(requestOptions, function(response) {
-    //console.log("Status code: " + response.statusCode);
-    //console.log("Header: " + JSON.stringify(response.headers));
-    //console.log("Header: " + response.headers.link);
+    pvcDebug("Status code: " + response.statusCode);
+    pvcDebug("Header: " + JSON.stringify(response.headers));
+    pvcDebug("Header: " + response.headers.link);
     if (response.headers.link) {
       var links = parse_link_header(response.headers.link);
-      //console.log("links: " + JSON.stringify(links));
-      //for (var i=0;i<links.length;i++) {
-      //  console.log("link: " + links[i]);
-      //}
-      //console.log("Object.keys = " + Object.keys(links));
+      pvcDebug("links: " + JSON.stringify(links));
+      pvcDebug("Object.keys = " + Object.keys(links));
       if (links.hasOwnProperty('next')) {
-        //console.log("Next page is: " + links.next);
+        pvcDebug("Next page is: " + links.next);
         nextUrl = url.parse(links.next);
-        //console.log("and path will be: " + nextUrl.path);
-        //requestOptions.host = nextUrl.host;
-        //requestOptions.path = nextUrl.path;
-      //} else {
-      //  console.log("Last page!");
+        pvcDebug("and path will be: " + nextUrl.path);
       }
     }
 
     // handle the response
     var res_data = '';
     response.on('data', function(chunk) {
-      //console.log(".....chunk");
+      pvcDebug(".....chunk");
       res_data += chunk;
     });
 
     response.on('end', function() {
-      //console.log(res_data);
+      pvcDebug(res_data);
       var page_data = JSON.parse(res_data);
       versions = [];
       if (page_data) {
@@ -111,12 +104,12 @@ function requestTagData (projectId, requestOptions, reportCallback) {
         for (var i=0;i<page_data.length;i++) {
           var extracted = extractVersionId(projectId, page_data[i].name);
           if (extracted != undefined ) {
-            //console.log("Extracted version is: " + extractVersionId(projectId, page_data[i].name));
+            pvcDebug("Extracted version is: " + extractVersionId(projectId, page_data[i].name));
             versions.push(extracted);
           }
         }
       }
-      //console.log("and path will be: " + nextUrl.path);
+      pvcDebug("and path will be: " + nextUrl.path);
       reportCallback(versions, nextUrl);
     });
 
@@ -129,9 +122,9 @@ function requestTagData (projectId, requestOptions, reportCallback) {
 
 // When all data has been collected,
 function composeData (action, versions, parent) {
-//  console.log("composeData():    action = " + action);
-//  console.log("composeData():  versions.length = " + versions.length);
-//  console.log("composeData() project:    parent = " + parent.project);
+  pvcDebug("composeData():    action = " + action);
+  pvcDebug("composeData():  versions.length = " + versions.length);
+  pvcDebug("composeData() project:    parent = " + parent.project);
 
   versions.sort( function(a,b) { return naturalCompare(b, a); });
 
@@ -145,10 +138,10 @@ function composeData (action, versions, parent) {
       break
     case 'validate':
       if (! versions) {
-        console.log("ERROR! Request returned: " + res_data);
+        pvcDebug("Request returned: " + res_data, 'PVC_ERROR');
         eventEmitter.emit('NotValidWatcher', parent);
       } else {
-        //console.log(versions);
+        pvcDebug(versions);
         if (versions[0] != parent.version) {
           console.log("NOTE: latest version is " + versions[0]);
           parent.version = versions[0];
@@ -178,7 +171,7 @@ function extractVersionId(projectId, rawVersion) {
 
   switch (projectId) {
     case 'OpenImageIO/oiio':
-      //console.log("Quirking version string " + rawVersion + " for project: " + projectId);
+      pvcDebug("Quirking version string " + rawVersion + " for project: " + projectId);
       if (rawVersion.search(/^Release-[0-9.]*$/) == 0 ) {
         return rawVersion.replace(/^[^0-9]*|-.*$/g, "");
       }

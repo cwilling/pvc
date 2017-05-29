@@ -5,11 +5,12 @@ const fs = require('fs')
 const os = require('os');
 const program = require('commander');
 
-pvcLocalDir = os.homedir() + '/.local/share/pvc'; // global for use in pvcWatcher.js
+/* pvcLocalDir is global, for use in pvcWatcher.js
+*/
+pvcLocalDir = os.homedir() + '/.local/share/pvc';
 const Watcher = require("./pvcWatcher");
 
-const pvcCommands = ["-h", "--help", "add", "delete", "show", "list", "check", "update", "config"];
-var myArgs = process.argv.slice(2);
+const pvcCommands = ["add", "delete", "show", "list", "check", "update", "config"];
 var pvcConfig = {};
 var action;
 var siteList = [];
@@ -187,8 +188,9 @@ function pvcSaveConfiguration (config) {
 
 /* Commands & options
 */
+program.option('-d, --debug', 'Additional debugging output')
 program.command("add")
-  .description('add project to watch list')
+  .description('Add a project to the watch list')
   .option("-p, --project <name>","project name")
   .option("-t, --type <type>","repository type")
   .option("-u, --urlbase [urlbase]","url base")
@@ -208,17 +210,17 @@ program.command("add")
     // triggering its push onto watchers array.
     newWatcher.check({'action':'validate','config':pvcConfig});
   });
-program.command("delete [projs...]")
-  .description('check details of named (or all) projects')
+program.command("delete [projects...]")
+  .description('Delete named project(s)')
   .option("-p, --project","delete named project(s)")
   .alias("remove")
-  .action( function (projs) {
-    console.log("Removing project: " + projs);
+  .action( function (cmd) {
+    console.log("Removing project: " + cmd);
     if (program.args[1].project) {
-      projs.push(program.args[1].project);
+      cmd.push(program.args[1].project);
     }
-    if (projs.length > 0) {
-      projs.forEach( function (item, index) {
+    if (cmd.length > 0) {
+      cmd.forEach( function (item, index) {
         var index = watchers.findIndex( function (el) {
           return el.project == item;
         });
@@ -236,7 +238,7 @@ program.command("delete [projs...]")
 
   });
 program.command("show [projects...]")
-  .description('show details of named (or all) projects')
+  .description('Show details of project(s)')
   .option("-p, --project <more...>","show details of named project(s)")
   .action( function (cmd) {
     if (program.args[1].project) {
@@ -263,7 +265,7 @@ program.command("show [projects...]")
     process.exit(0);
   });
 program.command("list")
-  .description('lists known projects')
+  .description('List known projects')
   .action( function (cmd) {
     if ( watchers.length == 0) {
       console.log("No entries found");
@@ -275,8 +277,8 @@ program.command("list")
     process.exit(0);
   });
 program.command("check [projects...]")
-  .description('check versions of named (or all) projects')
-  .option("-p, --project <more...>","check versions of named project(s)")
+  .description('Check versions of project(s)')
+  .option("-p, --project <more...>","check versions of project(s)")
   .action( function (cmd) {
     //console.log("cmd = " + cmd);
     if (program.args[1].project) {
@@ -364,11 +366,12 @@ program.command("update")
     eventEmitter.emit("UpdateWatcher", watchers[index], newVersion);
   });
 program.command("config")
-  .description('add, delete or show configuration items')
+  .description('Add, delete or show configuration items')
   .option("-a, --add <item>","Add a configuration item")
   .option("-d, --delete <item>","Delete a configuration item")
   .option("-s, --show [item]","Show a configuration item")
   .action( function (cmd) {
+    pvcDebug("XXXXX",'PVC_INFO');
     if (cmd.add) {
       console.log("ADD config item: " + cmd.add);
       setConfigEntry("add", cmd.add);
@@ -400,6 +403,8 @@ program.command("config")
 function parseCommand () {
   if (pvcCommands.indexOf(process.argv[2]) > -1) {
     //console.log("Known command (" + process.argv[2] + ")");
+    program.parse(process.argv);
+  } else if (process.argv[2] && process.argv[2].charAt(0) == '-') {
     program.parse(process.argv);
   } else {
     console.log("UNknown command (" + process.argv[2] + ")");
@@ -474,7 +479,25 @@ function setConfigEntry (mode, entry) {
 
 }
 
-
+/* pvcDebug is global for use in modules files
+*/
+pvcDebug = function (msg, level) {
+  if (! program.debug) return;
+  var level = level || 'PVC_DEBUG';
+  switch (level) {
+    case 'PVC_DEBUG':
+      console.log("PVC DEBUG: " + msg);
+      break;
+    case 'PVC_ERROR':
+      console.log("PVC ERROR: " + msg);
+      break;
+    case 'PVC_INFO':
+      console.log("PVC INFO: " + msg);
+      break;
+    default:
+      break;
+  }
+}
 
 
 setInterval( function() {

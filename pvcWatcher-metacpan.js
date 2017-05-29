@@ -19,21 +19,21 @@ var check = function (parent, options) {
     port: 443,
     path: '/' + reqpath
   };
-  //console.log("Request: " + requestOptions.path);
+  pvcDebug("Request: " + requestOptions.path);
 
   var req = https.get(requestOptions, function(response) {
     // handle the response
     var res_data = '';
     response.on('data', function(chunk) {
-      //console.log(".....chunk");
+      pvcDebug(".....chunk");
       res_data += chunk;
     });
     response.on('end', function() {
-      //console.log(res_data);
+      pvcDebug(res_data);
 
       var jdata = JSON.parse(res_data);
       if (jdata) {
-        //console.log("VERSION = " + jdata.version);
+        pvcDebug("VERSION = " + jdata.version);
         versions.push(jdata.version);
       }
 
@@ -47,7 +47,7 @@ var check = function (parent, options) {
           break
         case 'validate':
           if (! versions) {
-            console.log("ERROR! Request returned: " + res_data);
+            pvcDebug("ERROR! Request returned: " + res_data, "PVC_ERROR");
             eventEmitter.emit('NotValidWatcher', parent);
           } else {
             if (versions[0] != parent.version) {

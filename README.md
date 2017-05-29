@@ -78,14 +78,21 @@ PVC requires a command and possibly, depending on the command, command related o
 
 In particular:
 - pvc list
-- pvc show   [ --project projectname ]
-- pvc check  [ --project projectname ]
-- pvc update < --project projectname > [ --version version ]
-- pvc add    < --project projectname --type repotype --urlbase urlbase >
-- pvc delete < --project projectname >
+- pvc show   [ -p|--project projectname ]
+- pvc check  [ -p|--project projectname ]
+- pvc update < -p|--project projectname > [ -v|--version version ]
+- pvc add    < -p|--project projectname -t|--type repotype > [ -u|--urlbase urlbase ]
+- pvc delete < -p|--project projectname >
 - pvc config [ --add item | --delete item | --show [item] ]
 
 where a *config* item consists of a repo type field, optionally followed by further comma separated fields containing key:value pairs.
+
+#### Debugging
+In case of problems, all commands accept a -d | --debug option to output additional debugging information e.g.
+```
+    pvc -d check hoorex
+```
+
 
 #### Dependencies
 *PVC* requires the *commander* module for command line parsing. It can be installed for PVC by running the folowing command from the PVC directory:

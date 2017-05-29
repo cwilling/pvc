@@ -3,7 +3,7 @@ const common = require(pvcStartDir + '/pvcCommon.js');
 
 var check = function (parent, options) {
   var action = options.action || 'check';
-  //console.log("check() for project " + parent.project);
+  pvcDebug("check() for project " + parent.project);
 
   // https request
   var reqpath = 'download/' + parent.urlbase + '/';
@@ -16,28 +16,28 @@ var check = function (parent, options) {
     port: 443,
     path: '/' + reqpath
   };
-  //console.log("Request: " + requestOptions.path);
+  pvcDebug("Request: " + requestOptions.path);
   var req = https.get(requestOptions, function(response) {
     // handle the response
     var res_data = '';
     response.on('data', function(chunk) {
-      //console.log(".....chunk");
+      pvcDebug(".....chunk");
       res_data += chunk;
     });
     response.on('end', function() {
       res_data = res_data.split(/\r?\n/);
-      //console.log(res_data);
+      pvcDebug(res_data);
 
       var tarballName;
       var version;
       for(var i in res_data) {
-          //console.log(":::: " + res_data[i]);
+          pvcDebug(":::: " + res_data[i]);
           var lomatch = res_data[i].replace(/\?/,"   ").match(/libreoffice-[0-9].*\.tar\.[a-z]*/);
-          //console.log(">>>> " + typeof(lomatch) + "   " + lomatch);
+          pvcDebug(">>>> " + typeof(lomatch) + "   " + lomatch);
           if (lomatch) {
-            //console.log(">>>> " + lomatch.length + "  " + lomatch);
+            pvcDebug(">>>> " + lomatch.length + "  " + lomatch);
             tarballName = lomatch[0].substr(0, lomatch[0].indexOf(" "));
-            //console.log("Found tarballName: " + tarballName);
+            pvcDebug("Found tarballName: " + tarballName);
             break;
           }
       }
@@ -55,7 +55,7 @@ var check = function (parent, options) {
           break;
         case 'validate':
           if (! version) {
-            console.log("ERROR! tarball download not found in " + res_data);
+            pvcDebug("tarball download not found in " + res_data, "PVC_ERROR");
             eventEmitter.emit('NotValidWatcher', parent);
           } else {
             if ( version != parent.version ) {
