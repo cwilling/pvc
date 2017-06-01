@@ -23,28 +23,28 @@ eventEmitter.on('SaveWatchers', function () {
   // Save the watch list
   fs.rename(pvcWatchListFile, pvcLocalDir + '/watchListPrev.json', function (err) {
     if (err) {
-      console.log("ERROR renaming watchList. New watchList not created"); 
+      pvcDebug("- error renaming watchList. New watchList not created","PVC_ERROR"); 
     }
     //console.log("watchList in memory: " + watchers);
     fs.writeFile(pvcWatchListFile, JSON.stringify({"data":watchers}, null, 1), function (err) {
       if ( err) {
         console.log("ERROR writing watchList - new watchList not created"); 
       }
-      console.log("New watchList saved OK");
+      pvcDebug("New watchList saved OK");
       process.exit(0);
     });
   });
 });
 
 eventEmitter.on('CheckedWatcher', function (checkedWatcher, remote) {
-  //console.log(checkedWatcher.version + " vs. " + remote);
+  pvcDebug(checkedWatcher.version + " vs. " + remote);
   if (checkedWatcher.version == remote) {
     console.log("Project " + checkedWatcher.project + "  = " + checkedWatcher.version);
   } else {
     console.log("******* " + checkedWatcher.project + " local version = " + checkedWatcher.version + " remote version = " + remote);
   }
   checkCounter.counter += 1;
-  //console.log("check counter = " + checkCounter.counter + ", size = " + checkCounter.size);
+  //onsole.log("check counter = " + checkCounter.counter + ", size = " + checkCounter.size);
   if (checkCounter.counter == checkCounter.size) {
     checkCounter.counter = 0;
     process.exit(0);
@@ -74,7 +74,7 @@ eventEmitter.on('IsValidWatcher', function (newWatcher) {
 });
 
 eventEmitter.on('NotValidWatcher', function (newWatcher) {
-  //console.log("ERROR validating new watcher. Exiting now"); 
+  //pvcDebug("- error  validating new watcher. Exiting now", 'PVC_ERROR'); 
   process.exit(2);
 });
 
@@ -100,14 +100,14 @@ var pvcWatchListFile = pvcLocalDir + '/watchList.json';
 fs.mkdir(pvcLocalDir, function (err) {
   if (err ) {
     if (err.code != "EEXIST") {
-      console.log('os.mkdir(pvcLocalDir) ' + err);
+      pvcDebug('os.mkdir(pvcLocalDir) ' + err);
       process.exit(1);
     }
   }
   fs.mkdir(pvcConfigDir, function (err) {
     if (err ) {
       if (err.code != "EEXIST") {
-        console.log('os.mkdir(pvcLocalDir) ' + err);
+        pvcDebug('os.mkdir(pvcLocalDir) ' + err);
         process.exit(1);
       }
     }
@@ -115,20 +115,9 @@ fs.mkdir(pvcLocalDir, function (err) {
   pvcLoadConfiguration();
 });
 
-function usage () {
-  console.log("Usage:");
-  console.log("      pvc list");
-  console.log("      pvc show   [ --project projectname ]");
-  console.log("      pvc check  [ --project projectname ]");
-  console.log("      pvc update < --project projectname >");
-  console.log("      pvc add    < --project projectname --type repotype --urlbase urlbase >");
-  console.log("      pvc delete < --project projectname >");
-  console.log("      pvc config [ --add item | --delete item | --show [item] ]");
-}
-
 function loadWatchList () {
   fs.readFile(pvcWatchListFile, "utf8", function (err, data) {
-    //console.log("Open file: " + pvcWatchListFile);
+    //pvcDebug("Open file: " + pvcWatchListFile);
     if (err) {
       if (err.code == "ENOENT") {
         console.log("Had ENOENT: empty watchlist");
@@ -151,9 +140,9 @@ function loadWatchList () {
 
 
 function pvcLoadConfiguration () {
-  //console.log("Loading saved configuration");
+  //pvcDebug("Loading saved configuration");
   fs.readFile(pvcConfigFile, "utf8", function (err, data) {
-    //console.log("Open file: " + pvcConfigDir);
+    //pvcDebug("Open file: " + pvcConfigDir);
     if (err) {
       if (err.code == "ENOENT") {
         console.log("Had ENOENT: empty configuration");
@@ -163,7 +152,7 @@ function pvcLoadConfiguration () {
       eventEmitter.emit("config_ready", {});
       return;
     }
-    //console.log("pvcLoadConfiguration");
+    //pvcDebug("pvcLoadConfiguration");
     var obj = JSON.parse(data)
 
     // Add "global" definitions
@@ -181,7 +170,7 @@ function pvcSaveConfiguration (config) {
     if ( err) {
       console.log("ERROR writing configuration - new configuration not created"); 
     }
-    console.log("New configuration saved OK");
+    pvcDebug("New configuration saved OK");
     process.exit(0);
   });
 }
@@ -189,6 +178,10 @@ function pvcSaveConfiguration (config) {
 /* Commands & options
 */
 program.option('-d, --debug', 'Additional debugging output')
+  .action(function (cmd) {
+     cmdValue = cmd;
+   });
+
 program.command("add")
   .description('Add a project to the watch list')
   .option("-p, --project <name>","project name")
@@ -215,7 +208,7 @@ program.command("delete [projects...]")
   .option("-p, --project","delete named project(s)")
   .alias("remove")
   .action( function (cmd) {
-    console.log("Removing project: " + cmd);
+    pvcDebug("Removing project: " + cmd);
     if (program.args[1].project) {
       cmd.push(program.args[1].project);
     }
@@ -229,11 +222,11 @@ program.command("delete [projects...]")
           process.exit(3);
         }
         watchers.splice(index, 1);
-        //console.log(watchers);
+        //pvcDebug(watchers);
         eventEmitter.emit("SaveWatchers");
       });
     } else {
-      console.log("Can't DELETE all. Please specify projects to delete");
+      console.log("Won't DELETE all. Please specify projects to delete");
     }
 
   });
@@ -246,7 +239,7 @@ program.command("show [projects...]")
     }
     if (cmd.length > 0) {
       cmd.forEach(function (item, index) {
-        //console.log("SHOW: " + item);
+        //pvcDebug("SHOW: " + item);
         var index = watchers.findIndex( function (el) {
           return el.project == item;
         });
@@ -280,13 +273,13 @@ program.command("check [projects...]")
   .description('Check versions of project(s)')
   .option("-p, --project <more...>","check versions of project(s)")
   .action( function (cmd) {
-    //console.log("cmd = " + cmd);
+    //pvcDebug("cmd = " + cmd);
     if (program.args[1].project) {
       cmd.push(program.args[1].project);
     }
     if (cmd.length > 0) {
       cmd.forEach(function (item, index) {
-        //console.log("CHECK: " + item);
+        //pvcDebug("CHECK: " + item);
         var index = watchers.findIndex( function (el) {
           return el.project == item;
         });
@@ -294,16 +287,16 @@ program.command("check [projects...]")
           console.log("Couldn't find a project to check named: " + item);
           process.exit(3);
         }
-        checkCounter.size = 1;
+        checkCounter.size += 1 ;
         checkCounter.counter = 0;
-        //console.log("Checking single " + checkCounter.size + " project");
+        //pvcDebug("Checking single " + checkCounter.size + " project");
         watchers[index].check({'action':'check','config':pvcConfig});
       });
     } else {
-      console.log("CHECK: all");
+      pvcDebug("CHECK: all");
       checkCounter.size = watchers.length;
       checkCounter.counter = 0;
-      console.log("Checking all " + checkCounter.size + " projects");
+      pvcDebug("Checking all " + checkCounter.size + " projects");
       watchers.forEach( function(item, index) {
         item.check({'config':pvcConfig});
       });
@@ -315,26 +308,26 @@ program.command("update")
   .option("-v, --version <version>", "Specify the new version")
   .action( function (cmd) {
     var projectName, newVersion;
-    //console.log(typeof(cmd));
+    //pvcDebug(typeof(cmd));
     if (typeof(cmd) === 'object') {
       if (cmd.project) {
-        //console.log(cmd.project);
+        //pvcDebug(cmd.project);
         projectName = cmd.project;
       } else {
         console.log("Need a project to update");
         process.exit(1);
       }
       if (cmd.version && typeof(cmd.version) === 'string') {
-        //console.log(cmd.version);
+        //pvcDebug(cmd.version);
         newVersion = cmd.version;
       } else {
         console.log("Using network to update version");
       }
     } else {
-      //console.log(cmd);
+      //pvcDebug(cmd);
       projectName = cmd;
       if (typeof(program.args[1].version) === 'string') {
-        //console.log(program.args[1].version);
+        //pvcDebug(program.args[1].version);
         newVersion = program.args[1].version;
       } else {
         console.log("Using network to update version");
@@ -355,10 +348,10 @@ program.command("update")
     console.log("Updating project: " + projectName);
 
     if (!newVersion) {
-      console.log("No --version supplied so use remote version");
+      console.log("No --version supplied so looking for remote version");
       checkCounter.size = 1;
       checkCounter.counter = 0;
-      //console.log("Updating single " + checkCounter.size + " project");
+      //pvcDebug("Updating single " + checkCounter.size + " project");
       watchers[index].check({'action':'update','config':pvcConfig});
       return;
     }
@@ -373,24 +366,24 @@ program.command("config")
   .action( function (cmd) {
     pvcDebug("XXXXX",'PVC_INFO');
     if (cmd.add) {
-      console.log("ADD config item: " + cmd.add);
+      pvcDebug("ADD config item: " + cmd.add);
       setConfigEntry("add", cmd.add);
     } else if (cmd.delete) {
-      console.log("DELETE config item: " + cmd.delete);
+      pvcDebug("DELETE config item: " + cmd.delete);
       setConfigEntry("delete", cmd.delete);
     } else if (cmd.show) {
       if (typeof(cmd.show) === "boolean" ) {
-        console.log("SHOW config item: (No item supplied)" );
+        pvcDebug("SHOW config item: (No item supplied)" );
         setConfigEntry("show", null);
       } else {
-        console.log("SHOW config item: " + cmd.show);
+        pvcDebug("SHOW config item: " + cmd.show);
         setConfigEntry("show", cmd.show);
       }
     } else {
       console.log("UNKNOWN config request (Need: --add <item>| --delete <item>| --show <item>)");
       // Missing option for config command => show pertinent pvc information
       // but don't just show everything in case anything sensitive (passwords, auth keys)
-      //console.log("XXXX pvcConfig: " + JSON.stringify(pvcConfig,null,1));
+      //pvcDebug("XXXX pvcConfig: " + JSON.stringify(pvcConfig,null,1));
       //console.log("PVC - Project Version Checker \u00A9Copyright 2017 Christoph Willing");
       console.log("PVC - Project Version Checker");
       console.log("       watched projects file: " + pvcConfig["pvcWatchListFile"]);
@@ -402,19 +395,28 @@ program.command("config")
 
 function parseCommand () {
   if (pvcCommands.indexOf(process.argv[2]) > -1) {
-    //console.log("Known command (" + process.argv[2] + ")");
+    //pvcDebug("Known command (" + process.argv[2] + ")");
     program.parse(process.argv);
-  } else if (process.argv[2] && process.argv[2].charAt(0) == '-') {
+  } else if (process.argv.indexOf("-h") > 1 || process.argv.indexOf("--help") > 1) {
+    program.parse(process.argv);
+  } else if (process.argv.indexOf("-d") > 1 || process.argv.indexOf("--debug") > 1) {
+    if (process.argv.length == 3) {
+      // No command given
+      program.help();
+      process.exit(1);
+    }
+    pvcDebug("DEBUGGING mode");
     program.parse(process.argv);
   } else {
-    console.log("UNknown command (" + process.argv[2] + ")");
-    process.exit(1);
+    pvcDebug("Unknown command (" + process.argv[2] + ")");
+    program.help();
+    process.exit(0);
   }
 }
 
 
 function setConfigEntry (mode, entry) {
-  console.log(mode + "ing configuration item: " + entry);
+  pvcDebug(mode + "ing configuration item: " + entry);
 
   // Split the entry into its components
   if (entry) {
@@ -433,7 +435,7 @@ function setConfigEntry (mode, entry) {
       // Add the items
       for (var i=0;i<configItems.length;i++) {
         var item =  configItems[i].split(':');
-        //console.log("this item says " + item[0] + " = " + item[1]);
+        //pvcDebug("this item says " + item[0] + " = " + item[1]);
         pvcConfig[category][item[0]] = item[1];
       };
       break;
@@ -467,7 +469,7 @@ function setConfigEntry (mode, entry) {
       break;
   };
   // Show the result
-  //console.log("pvcConfig: " + JSON.stringify(pvcConfig));
+  //pvcDebug("pvcConfig: " + JSON.stringify(pvcConfig));
 
   // Save the result
   //fs.writeFileSync('pvcConfig.json', JSON.stringify(pvcConfig, null, 1));
@@ -501,12 +503,12 @@ pvcDebug = function (msg, level) {
 
 
 setInterval( function() {
-  //console.log("looping ...");
+  //pvcDebug("looping ...");
 }, (1000 + Math.floor((Math.random() * 100) + 1)));
 
 process.on('exit', function (code) {
   if ( code != 0) {
-    console.log(`Exiting with code: ${code}`);
+    pvcDebug(`Exiting with code: ${code}`);
   }
 });
 
