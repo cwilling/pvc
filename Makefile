@@ -26,8 +26,10 @@ install: nodeModules $(PVC_FILES) pvc.1 pvc-wrapper
 	mkdir -p $(DESTDIR)/usr/bin
 	cp -a $(PVC_FILES) node_modules $(DESTDIR)$(INSTALL_DIR)
 	sed -e "s:%INSTALL_DIR%:$(INSTALL_DIR):" pvc-wrapper >$(DESTDIR)/usr/bin/pvc
+	chmod a+x $(DESTDIR)/usr/bin/pvc
 	mkdir -p $(DESTDIR)/usr/man/man1
 	gzip -9c pvc.1 > $(DESTDIR)/usr/man/man1/pvc.1.gz
+	rm -rf node_modules
 
 pvc.1: pvc.1.in
 	sed -e 's/@VERSION@/$(PVC_VERSION)/' -e 's/@DATE@/$(shell date +"%a %d %b, %Y")/' $< > $@
@@ -41,8 +43,12 @@ nodeModules:
 	npm install
 
 uninstall:
-	rm $(PVC_FILES) $(DESTDIR)$(INSTALL_DIR)
-	rmdir --ignore-fail-on-non-empty $(PVC_FILES) $(DESTDIR)$(INSTALL_DIR)
+	rm -rf $(DESTDIR)$(INSTALL_DIR)/node_modules/*
+	rmdir --ignore-fail-on-non-empty $(DESTDIR)$(INSTALL_DIR)/node_modules
+	rm -rf $(DESTDIR)$(INSTALL_DIR)/pvc*
+	rmdir --ignore-fail-on-non-empty $(DESTDIR)$(INSTALL_DIR)
+	rm $(DESTDIR)/usr/bin/pvc
+	rm $(DESTDIR)/usr/man/man1/pvc.1*
 
 .PHONY:	man nodeModules install uninstall
 
