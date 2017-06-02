@@ -1,0 +1,31 @@
+{
+  "name": "pvc",
+  "version": "0.6.0",
+  "description": "Project Version Checker",
+  "main": "pvc",
+  "dependencies": {
+    "commander": "^2.9.0"
+  },
+  "dependencies": {
+    "commander" : ""
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cwilling/pvc.git"
+  },
+  "keywords": [
+    "project",
+    "version",
+    "checker"
+  ],
+  "author": "Christoph Willing",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/cwilling/pvc/issues"
+  },
+  "homepage": "https://github.com/cwilling/pvc#readme"
+}

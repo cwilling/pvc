@@ -1,0 +1,60 @@
+.TH pvc 1 "Fri 02 Jun, 2017" "Version 0.5.0"
+.SH NAME
+pvc - Program Version Checker
+
+.SH SYNOPSIS
+pvc add <--project name> <-type type > [--urlbase urlbase]
+.br
+pvc delete <--project name>
+.br
+pvc check <--project name [name ...]>
+.br
+pvc update <--project name> [--version version]
+.br
+pvc list
+.br
+pvc show [--project name]
+.br
+pvc config [--add item] [--delete item] [--show item]
+
+.SH DESCRIPTION
+.B pvc
+manages a
+.B "watch list"
+of projects whose source code repositories may be queried to ascertain the latest release.
+Operations on the watch list are performed using a series of sub commands, namely
+.B "add, delete, check, update, list, show"
+and
+.B "config."
+
+.SH OPTIONS
+Different options are distinguished by particular flags, each of which has a short and long form e.g.
+.B -p
+is equivalent to the
+.B "--project"
+flag. Not all options are relevant to all commands; please check the
+.B "SYNOPSIS"
+for precise usage. The possible options are:
+.IP "-p | --project"
+specifies the project name
+.IP "-t | --type"
+specifies the repository type
+.IP "-u | --urlbase"
+specifies the url base of the project
+.IP "-v | --version"
+
+.P
+If the type of option is "obvious", the option flag itself may be omitted. For instance the
+.B "delete"
+command can only take a project name option; therefore the -p or --project flags are redundant and may be omitted. For instance
+.B "pvc delete -p myproject"
+is equivalent to
+.B "pvc delete myproject"
+
+
+.SH BUGS
+Please report any bugs to the author.
+
+.SH AUTHOR
+Christoph Willing <chris.willing@linux.com>
+
