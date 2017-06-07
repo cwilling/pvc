@@ -21,7 +21,7 @@ global.eventEmitter = new events.EventEmitter();
 
 eventEmitter.on('SaveWatchers', function () {
   // Save the watch list
-  fs.rename(pvcWatchListFile, pvcLocalDir + '/watchListPrev.json', function (err) {
+  fs.rename(pvcWatchListFile, pvcWatchListFile.replace('.json', '_Prev.json'), function (err) {
     if (err) {
       pvcDebug("- error renaming watchList. New watchList not created","PVC_ERROR"); 
     }
@@ -94,7 +94,29 @@ eventEmitter.on('config_ready', function (obj) {
 // Definitions
 var pvcConfigDir = os.homedir() + '/.config/pvc';
 var pvcConfigFile = pvcConfigDir + '/pvcConfig.json';
-var pvcWatchListFile = pvcLocalDir + '/watchList.json';
+
+// Check whether alternate watch file has been requested
+var watchListItem; // A previously added config item
+for (var i=0;i<process.argv.length;i++) {
+  if ((process.argv[i] == '-w') || (process.argv[i] == '--watchlist')) {
+    if (process.argv[i+1]) {
+      //console.log("alternate watch list specified = " + process.argv[i+1]);
+      if (process.argv[i+1].search('-') == 0) {
+        console.log("bad watchlist name");
+        process.exit(1);
+      } else {
+        watchListItem = process.argv[i+1];
+        process.argv.splice(i,2);
+        break;
+      }
+    } else {
+      console.log("missing name for alt watch list");
+      process.exit(1);
+    }
+  }
+}
+var pvcWatchListFile;
+var pvcWatchListFile_default = pvcLocalDir + '/watchList.json';
 
 // When/if necessary directories exist, load configuration
 fs.mkdir(pvcLocalDir, function (err) {
@@ -120,7 +142,7 @@ function loadWatchList () {
     //pvcDebug("Open file: " + pvcWatchListFile);
     if (err) {
       if (err.code == "ENOENT") {
-        console.log("Had ENOENT: empty watchlist");
+        pvcDebug("Had ENOENT: empty watchlist");
         eventEmitter.emit("setup_ready");
         return;
       } else {
@@ -159,7 +181,20 @@ function pvcLoadConfiguration () {
     obj["pvcLocalDir"] = pvcLocalDir;
     obj["pvcConfigDir"] = pvcConfigDir;
     obj["pvcConfigFile"] = pvcConfigFile;
+    // If specified, insert alternate watch list file
+    if (watchListItem) {
+      // Does the item exist in the loaded configuration?
+      if (obj.watchlist && obj.watchlist[watchListItem]) {
+        pvcWatchListFile = obj.watchlist[watchListItem] + '/' + watchListItem + '.json';
+      } else {
+        console.log("No such watchlist configured: " + watchListItem);
+        process.exit(1);
+      }
+    } else {
+      pvcWatchListFile = pvcWatchListFile_default;
+    }
     obj["pvcWatchListFile"] = pvcWatchListFile;
+    //console.log("watchlist file = " + pvcWatchListFile);
 
     eventEmitter.emit("config_ready", obj);
   });
