@@ -213,6 +213,7 @@ function pvcSaveConfiguration (config) {
 /* Commands & options
 */
 program.option('-d, --debug', 'Additional debugging output')
+  .option('-w, --watchlist <name>', 'Use alternate watch list')
   .action(function (cmd) {
      cmdValue = cmd;
    });
