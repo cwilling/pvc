@@ -175,6 +175,7 @@ function extractVersionId(projectId, rawVersion) {
       }
       break;
   }
+}
 ```
 Note that the default i.e. "not special" case is just the same as the original extraction code in _check()_ before we started considering the differing presentations of the _x264_ and _x265_ project data.
 
