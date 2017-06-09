@@ -9,7 +9,16 @@ var check = function (parent, options) {
   // https request
   var acc = parent.urlbase.substr(0, parent.urlbase.indexOf('/'));
   var proj = parent.urlbase.substr(parent.urlbase.indexOf('/') + 1);
-  var reqpath = 'projects/' + acc + '/files/' + proj + '/';
+  var reqpath;
+  // Deal with oddballs
+  switch (acc) {
+      case 'cdrtools':
+        reqpath = 'projects/' + acc + '/files/';
+        break
+      default:
+        reqpath = 'projects/' + acc + '/files/' + proj + '/';
+        break;
+  }
   pvcDebug("reqpath = " + reqpath);
 
   var requestOptions = {
@@ -41,20 +50,25 @@ var check = function (parent, options) {
       var files;
       var versions = [];
       for(var i in res_data) {
+          //console.log(res_data[i]);
           if (res_data[i].search("net.sf.files") > 0) {
-              pvcDebug(res_data[i]);
+              //console.log(res_data[i]);
               var start = res_data[i].indexOf('{');
               var end = res_data[i].indexOf(';');
-              pvcDebug(res_data[i].slice(start, end));
+              //console.log(res_data[i].slice(start, end));
               files = JSON.parse(res_data[i].slice(start, end));
               break;
           }
       }
       if (files) {
         var rawVersions = Object.keys(files);
-        pvcDebug("Raw versions: " + rawVersions);
+        //console.log("Raw versions: " + rawVersions);
         for (var i=0;i<rawVersions.length;i++ ) {
-          versions.push(rawVersions[i].replace(/^[^0-9]*/, ""));
+          var extracted = extractVersionId(parent.urlbase, rawVersions[i]);
+          if (extracted) {
+            //console.log("extracted = " + extracted);
+            versions.push(extracted);
+          }
         }
       }
       versions.sort( function(a,b) { return naturalCompare(b, a); });
@@ -97,6 +111,20 @@ var check = function (parent, options) {
 
 }
 
+function extractVersionId(projectId, rawVersion) {
+  switch (projectId) {
+    case 'cdrtools/cdrtools':
+      var matched = rawVersion.match(/cdrtools-[0-9][0-9.]*[0-9]\.tar\.gz/);
+      if (matched) {
+        //console.log("Matched " + matched[0]);
+        return matched[0].replace(/cdrtools-|\.tar\.gz/g, "");
+      }
+      break;
+    default:
+      return rawVersion.replace(/^[^0-9]*/, "");
+      break;
+  }
+}
 
 sourceforge_functions = {
   "check":check,
