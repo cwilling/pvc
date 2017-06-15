@@ -13,7 +13,11 @@ var check = function (parent, options) {
   // Deal with oddballs
   switch (acc) {
       case 'cdrtools':
+      case 'terminus-font':
         reqpath = 'projects/' + acc + '/files/';
+        break
+      case 'joe':
+        reqpath = 'projects/joe-editor/files/JOE%20sources/';
         break
       default:
         reqpath = 'projects/' + acc + '/files/' + proj + '/';
@@ -112,6 +116,7 @@ var check = function (parent, options) {
 }
 
 function extractVersionId(projectId, rawVersion) {
+  //console.log(rawVersion);
   switch (projectId) {
     case 'cdrtools/cdrtools':
       var matched = rawVersion.match(/cdrtools-[0-9][0-9.]*[0-9]\.tar\.gz/);
@@ -120,8 +125,14 @@ function extractVersionId(projectId, rawVersion) {
         return matched[0].replace(/cdrtools-|\.tar\.gz/g, "");
       }
       break;
+    case 'mad/madplay':
+      return rawVersion;
+      break;
     default:
-      return rawVersion.replace(/^[^0-9]*/, "");
+      //console.log(rawVersion);
+      //return rawVersion.replace(/^[^0-9]*/, "");
+      var matched = rawVersion.match(/[0-9][0-9.]*/, '');
+      if (matched) return matched[0];
       break;
   }
 }
