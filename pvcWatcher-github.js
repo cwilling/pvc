@@ -70,6 +70,7 @@ function requestIterator (options, requestOptions, callback) {
 
 function requestTagData (projectId, requestOptions, reportCallback) {
   pvcDebug("requestTagData() for " + projectId);
+  pvcDebug("requestTagData() from " + requestOptions.host);
   var nextUrl = {};
 
   var req = https.get(requestOptions, function(response) {
@@ -99,8 +100,6 @@ function requestTagData (projectId, requestOptions, reportCallback) {
       var page_data = JSON.parse(res_data);
       versions = [];
       if (page_data) {
-
-        // Remove non-numeric leading characters before sorting
         for (var i=0;i<page_data.length;i++) {
           var extracted = extractVersionId(projectId, page_data[i].name);
           if (extracted != undefined ) {
@@ -126,6 +125,7 @@ function composeData (action, versions, parent) {
   pvcDebug("composeData():  versions.length = " + versions.length);
   pvcDebug("composeData() project:    parent = " + parent.project);
 
+  pvcDebug("Sorting " + versions);
   versions.sort( function(a,b) { return naturalCompare(b, a); });
 
   switch (action) {
@@ -170,14 +170,39 @@ function composeData (action, versions, parent) {
 function extractVersionId(projectId, rawVersion) {
 
   switch (projectId) {
+    case 'att/ast':
+      // ksh93 (hopefully no others use this projectId)
+      pvcDebug("Quirking version string " + rawVersion + " for project: " + projectId);
+      var matched = rawVersion.match(/SH_RELEASE/);
+      if (matched) {
+        var words = rawVersion.split();
+        return words[2].split()[1];
+      }
+      break;
     case 'OpenImageIO/oiio':
       pvcDebug("Quirking version string " + rawVersion + " for project: " + projectId);
       if (rawVersion.search(/^Release-[0-9.]*$/) == 0 ) {
         return rawVersion.replace(/^[^0-9]*|-.*$/g, "");
       }
       break;
+    case 'gphoto/gphoto2':
+      pvcDebug("Quirking version string " + rawVersion + " for project: " + projectId);
+      var matched = rawVersion.match(/gphoto2-[0-9][0-9_]*-release/);
+      if (matched) {
+        return rawVersion.replace(/^gphoto2-|-release$/g, "");
+      }
+      break;
     default:
-      return rawVersion.replace(/^[^0-9]*|-.*$/g, "");
+      // First remove non-numeric leading characters and suffixes like "-source" etc.
+      var partlyDone = rawVersion.replace(/^[^0-9]*|-.*$/g, "");
+      pvcDebug("partlyDone = " + partlyDone);
+
+      // Assume any remaining non-numeric character is "rc1" or similar so reject
+      var matched = partlyDone.match(/[^0-9.]/, "");
+      if (! matched) {
+        return partlyDone;
+      }
+      pvcDebug("Dropping: " + partlyDone + " (" + matched + ")");
       break;
   }
 }
