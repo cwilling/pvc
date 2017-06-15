@@ -6,6 +6,7 @@ var check = function (parent, options) {
   var action = options.action || 'check';
   var config = options.config || null;
   var versions = [];
+  var host = 'freedesktop.org';
 
 
   // https request
@@ -53,6 +54,18 @@ var check = function (parent, options) {
     case 'libqmi-glib':
       var reqpath = 'software/libqmi/' + parent.urlbase + '/';
       break;
+    case 'pm-utils':
+      var reqpath = 'releases/';
+      host = 'pm-utils.freedesktop.org';
+      break;
+    case 'radeontool':
+      var reqpath = '~airlied/radeontool/';
+      host = 'people.freedesktop.org';
+      break;
+    case 'vbetool':
+      var reqpath = '~airlied/vbetool/';
+      host = 'cgit.freedesktop.org';
+      break;
     default:
       console.log("Unhandled software (" + parent.urlbase + ") at freedesktop module.");
       process.exit(5);
@@ -63,7 +76,7 @@ var check = function (parent, options) {
     headers: {
       'User-Agent': 'pvc: Project Version Checker'
     },
-    host: 'freedesktop.org',
+    host: host,
     port: 443,
     path: '/' + reqpath
   };
@@ -146,9 +159,19 @@ function extractVersionId(projectId, rawVersion) {
   case 'virgl':
     var head = new RegExp('>virglrenderer-', "");
     var findMe = new RegExp(head.source + '[0-9][0-9.]*[0-9]\\.tar\\.[bgx]z2*<', "");
-    var replaceMe = new RegExp(head.source + '|\\.tar\\.[bgx]z2*<', "g");
     var matched = rawVersion.match(findMe);
     if (matched) {
+      var replaceMe = new RegExp(head.source + '|\\.tar\\.[bgx]z2*<$', "g");
+      return matched[0].replace(replaceMe, "");
+    }
+    break;
+  case 'vbetool':
+    var head = new RegExp('>' + projectId + '-', "");
+    var findMe = new RegExp(head.source + '[0-9][0-9.]*[0-9]<', "");
+    var matched = rawVersion.match(findMe);
+    if (matched) {
+      pvcDebug("MATCHED: " + matched[0]);
+      var replaceMe = new RegExp(head.source + '|<$', "g");
       return matched[0].replace(replaceMe, "");
     }
     break;
@@ -166,17 +189,21 @@ function extractVersionId(projectId, rawVersion) {
   case 'libva':
   case 'media-player-info':
   case 'plymouth':
+  case 'pm-utils':
   case 'pulseaudio':
+  case 'radeontool':
   case 'realmd':
   case 'shared-mime-info':
   case 'tartan':
   case 'uchardet':
   case 'xdg-app':
     var head = new RegExp('>' + projectId + '-', "");
-    var findMe = new RegExp(head.source + '[0-9][0-9.]*[0-9]\\.tar\\.[bgx]z2*<', "");
-    var replaceMe = new RegExp(head.source + '|\\.tar\\.[bgx]z2*<', "g");
+    var findMe = new RegExp(head.source + '[0-9][0-9.]*[0-9]\\.tar\\.[bglx]z2*<', "");
+    console.log("findMe: " + findMe);
     var matched = rawVersion.match(findMe);
     if (matched) {
+      pvcDebug("MATCHED: " + matched[0]);
+      var replaceMe = new RegExp(head.source + '|\\.tar\\.[bglx]z2*$<', "g");
       return matched[0].replace(replaceMe, "");
     }
     break;
