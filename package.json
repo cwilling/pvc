@@ -12,6 +12,12 @@
   "dependencies": {
     "ftp" : ""
   },
+  "dependencies": {
+    "tar.gz" : ""
+  },
+  "dependencies": {
+    "request" : ""
+  },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
