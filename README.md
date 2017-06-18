@@ -4,7 +4,7 @@ PVC maintains a "watch list" of software projects which may be manipulated using
 
 A project of interest is added to the watch list using pvc's *add* command; removed from the list with the *delete* command. The *add* command needs to be supplied with a project name, a repository type and a url base.
   - the project name is chosen arbitrarily by the user but is likely to reflect the actual project name.
-  - the repo type is any of the supported repository types which currently are *github*, *sourceforge*, *pypi*, *freedesktop*, *hackage*, *live555*, *metacpan*, *suitesparse*, *vtk* and *libreoffice*. These built in types may be supplemented with additional user defined types by placing a suitably crafted module file in a prearranged user writable directory, from where it is added at run time (for details,see: [https://cwilling.github.io/pvc/](https://cwilling.github.io/pvc/).
+  - the repo type is any of the supported repository types including *github*, *sourceforge*, *pypi*, *freedesktop*, *hackage*, *metacpan* and *libreoffice*. Any built in types may be supplemented with additional user defined types by placing a suitably crafted module file in a prearranged user writable directory, from where it is added at run time (for details,see: [https://cwilling.github.io/pvc/](https://cwilling.github.io/pvc/).
   - the format of the url base required by the *add* command depends on the repo type:
     - github form is *owner/project name* e.g. cwilling/pvc
     - sourceforge form is *project name/(sub)project name* e.g. qwt/qwt or libvncserver/x11vnc
@@ -13,12 +13,8 @@ A project of interest is added to the watch list using pvc's *add* command; remo
     - hackage form is also the *project name* e.g. hscolour
     - freedesktop form is the *project name* e.g. libevdev
     - libreoffice form is the release category e.g. libreoffice-fresh or libreoffice-still
-    - live555 form is the *project name* i.e. live555
     - metacpan form is the *project name (as known at metacpan)* e.g. libnet
-    - suitesparse form is the *project name* i.e. suitesparse
-    - vtk form is the *project name* i.e. vtk
-    - zpaq form is the *project name* i.e. zpaq
-
+    
 Examples of *add* command usage for the different repo types are:
   - pvc add --project pvc --type github --urlbase cwilling/pvc
   - pvc add --project x11vnc --type sourceforge --urlbase libvncserver/x11vnc
@@ -27,12 +23,12 @@ Examples of *add* command usage for the different repo types are:
   - pvc add --project hscolour --type hackage --urlbase hscolor
   - pvc add --project libevdev --type freedesktop --urlbase libevdev
   - pvc add --project LibreOffice --type libreoffice --urlbase libreoffice-fresh
-  - pvc add --project live555 --type live555 --urlbase live555
-  - pvc add --project perl-libnet --type live555 --urlbase libnet
-  - pvc add --project suitesparse --type suitesparse --urlbase suitesparse
-  - pvc add --project vtk --type vtk --urlbase vtk
-  - pvc add --project zpaq --type zpaq --urlbase zpaq
+  - pvc add --project perl-libnet --type metacpan --urlbase libnet
 
+A full list of supported repo types is given in response to the command:
+
+    pvc config
+    
 As the *add* command runs, it interrogates the remote repository for the project's latest version number which is recorded for later reference as well as being displayed at the command line. If the version number displayed is *undefined*, it indicates a failure of the *add* command.
 
 The current contents of the watch list may be viewed at any time using the *list* and *show* commands. The *list* command displays each watched project name and its recorded version number, one project entry per line. The *show* command displays all pvc's information about each watched project. The information that is displayed consists of the project's name, repo type, url base and recorded version number. If a --project argument is supplied, only information about the named project is displayed e.g.
@@ -96,8 +92,5 @@ In case of problems, all commands accept a -d | --debug option to output additio
 
 #### Dependencies
 *PVC* requires node.js to run.
-It also requires the [commander module](https://www.npmjs.com/package/commander) for command line parsing. The commander module can be installed for *PVC* by running the folowing command from the *PVC* directory:
-```
-    npm install commander
-```
+It also requires the [commander](https://www.npmjs.com/package/commander), [ftp](https://www.npmjs.com/package/ftp), [tar.gz](https://www.npmjs.com/package/tar.gz) and [request](https://www.npmjs.com/package/request) modules. These modules can be installed for *PVC* by running the command *npm install* from the *PVC* directory:
 
