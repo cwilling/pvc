@@ -21,25 +21,32 @@ var check = function (parent, options) {
   }
   pvcDebug("check() for project " + parent.project + " with auth = " + auth);
 
-      var nextPage = 1;
-      versions = [];
+  var multipagelimit;
+  if (config[parent.urlbase] && config[parent.urlbase].multipagelimit) {
+    multipagelimit = config[parent.urlbase].multipagelimit;
+  } else {
+    multipagelimit = 0;
+  }
 
-      // https request
-      var reqpath = 'repos/' + parent.urlbase + '/tags?page=' + nextPage;
-      var requestOptions = {
-        headers: {
-          'User-Agent': 'pvc: Project Version Checker'
-        },
-        host: 'api.github.com',
-        port: 443,
-        path: '/' + reqpath
-      };
-      if (auth) {
-        requestOptions.headers['Authorization'] = auth;
-      }
-      pvcDebug("Request: " + requestOptions.path);
+  var nextPage = 1;
+  versions = [];
 
-      requestIterator({"action":action,"versions":versions,"parent":parent}, requestOptions, composeData);
+  // https request
+  var reqpath = 'repos/' + parent.urlbase + '/tags?page=' + nextPage;
+  var requestOptions = {
+    headers: {
+      'User-Agent': 'pvc: Project Version Checker'
+    },
+    host: 'api.github.com',
+    port: 443,
+    path: '/' + reqpath
+  };
+  if (auth) {
+    requestOptions.headers['Authorization'] = auth;
+  }
+  pvcDebug("Request: " + requestOptions.path);
+
+  requestIterator({"action":action, "versions":versions, "parent":parent, "multipagelimit":multipagelimit}, requestOptions, composeData);
 
 }
 
@@ -47,6 +54,9 @@ var check = function (parent, options) {
 */
 function requestIterator (options, requestOptions, callback) {
   pvcDebug("requestIterator()");
+  pvcDebug("multipagelimit: " + options.multipagelimit);
+  var multipagelimit = options.multipagelimit;
+  var pages = 0;
 
   function report(newVersions, nextUrl) {
 
@@ -54,12 +64,20 @@ function requestIterator (options, requestOptions, callback) {
       pvcDebug("Adding version: " + item);
       options.versions.push(item);
     });
+    pages += 1;
+    pvcDebug("pages: " + pages);
     if ( "path" in nextUrl) {
-      // update header with latest path
-      requestOptions.host = nextUrl.host;
-      requestOptions.path = nextUrl.path;
-      requestTagData(options.parent.urlbase, requestOptions, report);
-      pvcDebug("Next request options: " + JSON.stringify(requestOptions));
+      if ((multipagelimit > 0) && (pages >= multipagelimit)) {
+        // enough is enough
+        callback(options.action, options.versions, options.parent);
+      } else {
+        // no pages limit (or limit not yet exceeded)
+        // update header with latest path
+        requestOptions.host = nextUrl.host;
+        requestOptions.path = nextUrl.path;
+        requestTagData(options.parent.urlbase, requestOptions, report);
+        pvcDebug("Next request options: " + JSON.stringify(requestOptions));
+      }
     } else {
       callback(options.action, options.versions, options.parent);
     }
@@ -74,47 +92,48 @@ function requestTagData (projectId, requestOptions, reportCallback) {
   var nextUrl = {};
 
   var req = https.get(requestOptions, function(response) {
-    pvcDebug("Status code: " + response.statusCode);
-    pvcDebug("Header: " + JSON.stringify(response.headers));
-    pvcDebug("Header: " + response.headers.link);
-    if (response.headers.link) {
-      var links = parse_link_header(response.headers.link);
-      pvcDebug("links: " + JSON.stringify(links));
-      pvcDebug("Object.keys = " + Object.keys(links));
-      if (links.hasOwnProperty('next')) {
-        pvcDebug("Next page is: " + links.next);
-        nextUrl = url.parse(links.next);
-        pvcDebug("and path will be: " + nextUrl.path);
-      }
+  pvcDebug("Status code: " + response.statusCode);
+  pvcDebug("Header: " + JSON.stringify(response.headers));
+  pvcDebug("Header: " + response.headers.link);
+  if (response.headers.link) {
+    var links = parse_link_header(response.headers.link);
+    pvcDebug("links: " + JSON.stringify(links));
+    pvcDebug("Object.keys = " + Object.keys(links));
+    if (links.hasOwnProperty('next')) {
+      pvcDebug("Next page is: " + links.next);
+      nextUrl = url.parse(links.next);
+      pvcDebug("and path will be: " + nextUrl.path);
     }
+  }
 
-    // handle the response
-    var res_data = '';
-    response.on('data', function(chunk) {
-      pvcDebug(".....chunk");
-      res_data += chunk;
-    });
+  // handle the response
+  var res_data = '';
+  response.on('data', function(chunk) {
+    pvcDebug(".....chunk");
+    res_data += chunk;
+  });
 
-    response.on('end', function() {
-      pvcDebug(res_data);
-      var page_data = JSON.parse(res_data);
-      versions = [];
-      if (page_data) {
-        for (var i=0;i<page_data.length;i++) {
-          var extracted = extractVersionId(projectId, page_data[i].name);
-          if (extracted != undefined ) {
-            pvcDebug("Extracted version is: " + extractVersionId(projectId, page_data[i].name));
-            versions.push(extracted);
-          }
+  response.on('end', function() {
+    pvcDebug(res_data);
+    var page_data = JSON.parse(res_data);
+    versions = [];
+    if (page_data) {
+      for (var i=0;i<page_data.length;i++) {
+        var extracted = extractVersionId(projectId, page_data[i].name);
+        if (extracted != undefined ) {
+          pvcDebug("Extracted version is: " + extractVersionId(projectId, page_data[i].name));
+          versions.push(extracted);
         }
       }
-      pvcDebug("and path will be: " + nextUrl.path);
-      reportCallback(versions, nextUrl);
-    });
+    }
+    pvcDebug("and path will be: " + nextUrl.path);
+    reportCallback(versions, nextUrl);
+  });
 
   });
+
   req.on('error', function(e) {
-    console.log("Got error: " + e.message);
+  console.log("Got error: " + e.message);
   });
 
 }

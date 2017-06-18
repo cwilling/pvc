@@ -155,6 +155,8 @@ adds a2ps project to the watch list names set_ap
 checks for latest versions of all projects in the default watch list
 .IP "pvc check -w set_ap"
 checks for latest versions of all projects in the watch list named set_ap
+.IP "pvc config --add vim/vim,multipagelimit:1"
+For repositories which paginate results with large entries, e.g. vim/vim at GitHub with over 192 pages of results, limit the number of pages queried.
 
 .SH "SEE ALSO"
 Repology (https://repology.org) for a web based approach for tracking built packages, rather than source code releases.
