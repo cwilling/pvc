@@ -1,18 +1,29 @@
 PVC_FILES = pvc \
-	pvcCommon.js \
-	pvcWatcher-freedesktop.js \
-	pvcWatcher-github.js \
-	pvcWatcher-hackage.js \
-	pvcWatcher-libreoffice.js \
-	pvcWatcher-live555.js \
-	pvcWatcher-metacpan.js \
-	pvcWatcher-pypi.js \
-	pvcWatcher-sbdirectlinks.js \
-	pvcWatcher-sourceforge.js \
-	pvcWatcher-suitesparse.js \
-	pvcWatcher-vtk.js \
-	pvcWatcher-zpaq.js \
 	pvcWatcher.js
+
+PVC_PLUGIN_FILES = \
+	plugins/pvcWatcher-alsa.js \
+	plugins/pvcWatcher-freedesktop.js \
+	plugins/pvcWatcher-generic.js \
+	plugins/pvcWatcher-github.js \
+	plugins/pvcWatcher-gnu.js \
+	plugins/pvcWatcher-hackage.js \
+	plugins/pvcWatcher-http.js \
+	plugins/pvcWatcher-ibiblio.js \
+	plugins/pvcWatcher-iisland.js \
+	plugins/pvcWatcher-libreoffice.js \
+	plugins/pvcWatcher-metacpan.js \
+	plugins/pvcWatcher-mirrorservice.js \
+	plugins/pvcWatcher-pypi.js \
+	plugins/pvcWatcher-samba.js \
+	plugins/pvcWatcher-savannah.js \
+	plugins/pvcWatcher-sbdirectlinks.js \
+	plugins/pvcWatcher-sgi.js \
+	plugins/pvcWatcher-sourceforge.js \
+	plugins/pvcWatcher-xiph.js
+
+PVC_EXTRA_FILES = \
+	extra/template-pvcWatcher-newtype.js
 
 DESTDIR ?= "/"
 INSTALL_DIR ?= "/usr/share/pvc"
@@ -22,9 +33,11 @@ default: install
 
 
 install: nodeModules $(PVC_FILES) pvc.1 pvc-wrapper
-	mkdir -p $(DESTDIR)$(INSTALL_DIR)/node_modules
+	mkdir -p $(DESTDIR)$(INSTALL_DIR)/{node_modules,plugins,extra}
 	mkdir -p $(DESTDIR)/usr/bin
 	cp -a $(PVC_FILES) node_modules $(DESTDIR)$(INSTALL_DIR)
+	cp -a $(PVC_PLUGIN_FILES) $(DESTDIR)$(INSTALL_DIR)/plugins
+	cp -a $(PVC_EXTRA_FILES) $(DESTDIR)$(INSTALL_DIR)/extra
 	sed -e "s:%INSTALL_DIR%:$(INSTALL_DIR):" pvc-wrapper >$(DESTDIR)/usr/bin/pvc
 	chmod a+x $(DESTDIR)/usr/bin/pvc
 	mkdir -p $(DESTDIR)/usr/man/man1
@@ -43,9 +56,7 @@ nodeModules:
 	npm install
 
 uninstall:
-	rm -rf $(DESTDIR)$(INSTALL_DIR)/node_modules/*
-	rmdir --ignore-fail-on-non-empty $(DESTDIR)$(INSTALL_DIR)/node_modules
-	rm -rf $(DESTDIR)$(INSTALL_DIR)/pvc*
+	rm -rf $(DESTDIR)$(INSTALL_DIR)/*
 	rmdir --ignore-fail-on-non-empty $(DESTDIR)$(INSTALL_DIR)
 	rm $(DESTDIR)/usr/bin/pvc
 	rm $(DESTDIR)/usr/man/man1/pvc.1*
