@@ -1,10 +1,10 @@
 const fs = require("fs");
 
 // Load plugins
-var pluginPaths = ['./', pvcLocalDir];
+var pluginPaths = ['./plugins', pvcLocalDir];
 var watcherFunctions = {};
 pvcRetrievalTypes = []; // Global from pvc
-pvcStartDir = __dirname; // global for modules
+pvcStartDir = __dirname + '/plugins'; // global for modules
 
 pluginPaths.forEach( function (path, index) {
   //console.log("Doing: " + path + "  " + index);
