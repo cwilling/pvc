@@ -2,6 +2,7 @@ PVC_FILES = pvc \
 	pvcWatcher.js
 
 PVC_PLUGIN_FILES = \
+	plugins/pvcCommon.js \
 	plugins/pvcWatcher-alsa.js \
 	plugins/pvcWatcher-freedesktop.js \
 	plugins/pvcWatcher-generic.js \
