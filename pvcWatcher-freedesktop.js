@@ -199,11 +199,11 @@ function extractVersionId(projectId, rawVersion) {
   case 'xdg-app':
     var head = new RegExp('>' + projectId + '-', "");
     var findMe = new RegExp(head.source + '[0-9][0-9.]*[0-9]\\.tar\\.[bglx]z2*<', "");
-    console.log("findMe: " + findMe);
+    //console.log("findMe: " + findMe);
     var matched = rawVersion.match(findMe);
     if (matched) {
       pvcDebug("MATCHED: " + matched[0]);
-      var replaceMe = new RegExp(head.source + '|\\.tar\\.[bglx]z2*$<', "g");
+      var replaceMe = new RegExp(head.source + '|\\.tar\\.[bglx]z2*<$', "g");
       return matched[0].replace(replaceMe, "");
     }
     break;
