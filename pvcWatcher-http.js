@@ -19,6 +19,10 @@ var check = function (parent, options) {
       host = 'files.itstool.org';
       reqpath = parent.urlbase + '/';
       break;
+    case 'live555':
+      host = 'www.live555.com';
+      reqpath = 'liveMedia/public/';
+      break;
     case 'jed':
     case 'most':
       host = 'www.jedsoft.org';
@@ -126,6 +130,13 @@ switch (projectId) {
         pvcDebug("MATCHED: " + matched[0]);
         var replaceMe = RegExp('^tools-|\\.tar\\.gz$', 'g');
         return matched[0].replace(replaceMe, '');
+      }
+      break;
+    case 'live555':
+      var matched = rawVersion.match(/live\.[0-9.]*/);
+      if (matched) {
+        pvcDebug("MATCHED: " + matched);
+        return matched[0].replace(/^[^0-9]*|\.$/g, '');
       }
       break;
     case 'jed':
