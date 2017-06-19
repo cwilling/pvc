@@ -20,6 +20,7 @@ var check = function (parent, options) {
       reqpath = parent.urlbase + '/';
       break;
     case 'jed':
+    case 'most':
       host = 'www.jedsoft.org';
       reqpath = 'releases/' + parent.urlbase + '/';
       break;
@@ -128,6 +129,7 @@ switch (projectId) {
       }
       break;
     case 'jed':
+    case 'most':
       //console.log(res_data[i]);
       var head = new RegExp(projectId + '-', "");
       var findMe = new RegExp(head.source + '[0-9][0-9.-]*.\\.tar\\.[bglx]z2*', "");
