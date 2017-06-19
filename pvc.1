@@ -1,4 +1,4 @@
-.TH pvc 1 "Mon 19 Jun, 2017" "Version 0.7.0"
+.TH pvc 1 "Mon 19 Jun, 2017" "Version 0.7.1"
 .SH NAME
 pvc - Program Version Checker
 
@@ -130,7 +130,11 @@ command.
 .IP "$HOME/.local/share/pvc"
 is the directory containing user defined "Watcher" files for additional repository types. This is also the location of the ueser's default watch list file (watchList.json) and is the preferred location for user defined alternate watch lists.
 .IP "/usr/share/pvc"
-is the location of pvc system files, including "Watcher" files for the default repository types.
+is the location of pvc system files
+.IP "/usr/share/pvc/plugins"
+is the location of the "Watcher" files for the default repository types.
+.IP "/usr/share/pvc/extra"
+is a directory for additional material, including the template for user defined "Watcher" files.
 
 .SH EXAMPLES
 .IP "pvc add -p hoorex -t github -u cwilling/hoorex"
