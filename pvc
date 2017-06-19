@@ -241,7 +241,7 @@ program.command("add")
   });
 program.command("delete [projects...]")
   .description('Delete named project(s)')
-  .option("-p, --project","delete named project(s)")
+  .option("-p, --project [project ...]","delete named project(s)")
   .alias("remove")
   .action( function (cmd) {
     pvcDebug("Removing project: " + cmd);
@@ -263,6 +263,7 @@ program.command("delete [projects...]")
       });
     } else {
       console.log("Won't DELETE all. Please specify projects to delete");
+      process.exit(2);
     }
 
   });
