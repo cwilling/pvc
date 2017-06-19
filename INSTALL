@@ -1,0 +1,9 @@
+To run PVC as an ordinary user without a system wide installation,
+always cd to this directory and prefix any pvc commands with "./"
+e.g.
+	./pvc config show
+
+
+To install PVC system wide, run (as root):
+	make install
+then run pvc commands like any other command.
