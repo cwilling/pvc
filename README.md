@@ -66,6 +66,19 @@ where the first field of the --add argument indicates that github is the reposit
 
 After adding such authorisation with the *config* command, pvc will use it for all access to the github repository.
 
+Since *pvc*'s configuration is available to all modules, it provides a way to supply any extra information that a module may need (like GitHub authorization details, as already described). Another example is the abilty to configure how far through a project's release pages should be searched for the latest version. Some GitHub projects have several pages of releases. If the latest release appears on the first page, there's no point in looking at the remaining pages; each page entails a new query and therefore another 3-4 seconds retrieving each page. That may be OK for just a few pages but there are sometimes many more. For example the vim/vim project has over 192 pages of releases, resulting in a very long time to accumulate all results even though the only result we're actually interested in is on the first page. For such cases, the *github* module recognizes a configuration option named *multipagelimit* and applies it to any project for which it is configured. For the *vim* project, it would be set by:
+
+    pvc config -add vim/vim,multipagelimit:1
+
+which indicates that only the first page of *vim* releases should be consulted. Notice that the project is identified by its *urlbase*, not its project name. Another such example is finding the GitHub's *OpenImage/oiio* latest release, contained on the third of nine pages. In this case we would configure:
+
+    pvc config -add OpenImage/oiio,multipagelimit:3
+
+which indicates that only the first three pages of results should be consulted.
+
+Although these examples involve the *github* type, this mechanism is particularly useful for user defined modules which can be written to look for any configured item the author needs or cares to include.
+
+
 If pvc is run without any command, an abbreviated version of the following command summary is shown.
 
 #### Command summary
