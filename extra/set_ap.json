@@ -1,0 +1,430 @@
+{
+ "data": [
+  {
+   "project": "a2ps",
+   "type": "gnu",
+   "urlbase": "a2ps",
+   "version": "4.14"
+  },
+  {
+   "project": "acct",
+   "type": "gnu",
+   "urlbase": "acct",
+   "version": "6.6.3"
+  },
+  {
+   "project": "alsa-utils",
+   "type": "alsa",
+   "urlbase": "utils",
+   "version": "1.1.4"
+  },
+  {
+   "project": "bpe",
+   "type": "sourceforge",
+   "urlbase": "bpe/BPE",
+   "version": "2.01.00"
+  },
+  {
+   "project": "cdparanoia",
+   "type": "xiph",
+   "urlbase": "cdparanoia",
+   "version": "10.2"
+  },
+  {
+   "project": "cdrdao",
+   "type": "sourceforge",
+   "urlbase": "cdrdao/cdrdao",
+   "version": "1.2.3"
+  },
+  {
+   "project": "cdrtools",
+   "type": "sourceforge",
+   "urlbase": "cdrtools/cdrtools",
+   "version": "3.01"
+  },
+  {
+   "project": "cgmanager",
+   "type": "github",
+   "urlbase": "lxc/cgmanager",
+   "version": "0.39"
+  },
+  {
+   "project": "cups",
+   "type": "github",
+   "urlbase": "apple/cups",
+   "version": "2.2.3"
+  },
+  {
+   "project": "dc3dd",
+   "type": "sourceforge",
+   "urlbase": "dc3dd/dc3dd",
+   "version": "7.2.646"
+  },
+  {
+   "project": "diffstat",
+   "type": "iisland",
+   "urlbase": "diffstat",
+   "version": "1.60"
+  },
+  {
+   "project": "diffutils",
+   "type": "gnu",
+   "urlbase": "diffutils",
+   "version": "3.5"
+  },
+  {
+   "project": "dmapi",
+   "type": "sgi",
+   "urlbase": "dmapi",
+   "version": "2.2.12"
+  },
+  {
+   "project": "dmidecode",
+   "type": "savannah",
+   "urlbase": "dmidecode",
+   "version": "3.0"
+  },
+  {
+   "project": "enscript",
+   "type": "gnu",
+   "urlbase": "enscript",
+   "version": "1.6.6"
+  },
+  {
+   "project": "flac",
+   "type": "xiph",
+   "urlbase": "flac",
+   "version": "1.3.2"
+  },
+  {
+   "project": "ghostscript-fonts-std",
+   "type": "sourceforge",
+   "urlbase": "gs-fonts/gs-fonts",
+   "version": "8.11"
+  },
+  {
+   "project": "gphoto2",
+   "type": "github",
+   "urlbase": "gphoto/gphoto2",
+   "version": "2.5.11"
+  },
+  {
+   "project": "groff",
+   "type": "gnu",
+   "urlbase": "groff",
+   "version": "1.22.3"
+  },
+  {
+   "project": "gutenprint",
+   "type": "sourceforge",
+   "urlbase": "gimp-print/gutenprint-5.2",
+   "version": "5.2.12"
+  },
+  {
+   "project": "hplip",
+   "type": "sourceforge",
+   "urlbase": "hplip/hplip",
+   "version": "3.17.4"
+  },
+  {
+   "project": "htop",
+   "type": "github",
+   "urlbase": "hishamhm/htop",
+   "version": "2.0.2"
+  },
+  {
+   "project": "joe",
+   "type": "sourceforge",
+   "urlbase": "joe/joe",
+   "version": "4.4"
+  },
+  {
+   "project": "lsscsi",
+   "type": "github",
+   "urlbase": "hreinecke/lsscsi",
+   "version": "0.28"
+  },
+  {
+   "project": "lxc",
+   "type": "github",
+   "urlbase": "lxc/lxc",
+   "version": "2.0.1"
+  },
+  {
+   "project": "madplay",
+   "type": "sourceforge",
+   "urlbase": "mad/madplay",
+   "version": "0.15.2b"
+  },
+  {
+   "project": "mc",
+   "type": "github",
+   "urlbase": "MidnightCommander/mc",
+   "version": "4.8.19"
+  },
+  {
+   "project": "most",
+   "type": "http",
+   "urlbase": "most",
+   "version": "5.0.0a"
+  },
+  {
+   "project": "mpg123",
+   "type": "sourceforge",
+   "urlbase": "mpg123/mpg123",
+   "version": "1.23.4"
+  },
+  {
+   "project": "nano",
+   "type": "gnu",
+   "urlbase": "nano",
+   "version": "2.8.4"
+  },
+  {
+   "project": "normalize",
+   "type": "savannah",
+   "urlbase": "normalize",
+   "version": "0.7.7"
+  },
+  {
+   "project": "pamixer",
+   "type": "github",
+   "urlbase": "cdemoulins/pamixer",
+   "version": "1.3.1"
+  },
+  {
+   "project": "pm-utils",
+   "type": "freedesktop",
+   "urlbase": "pm-utils",
+   "version": "1.4.1"
+  },
+  {
+   "project": "qpdf",
+   "type": "github",
+   "urlbase": "qpdf/qpdf",
+   "version": "6.0.0"
+  },
+  {
+   "project": "radeontool",
+   "type": "freedesktop",
+   "urlbase": "radeontool",
+   "version": "1.6.3"
+  },
+  {
+   "project": "rpm",
+   "type": "github",
+   "urlbase": "rpm-software-management/rpm",
+   "version": "4.12.0.1"
+  },
+  {
+   "project": "rzip",
+   "type": "samba",
+   "urlbase": "rzip",
+   "version": "2.1"
+  },
+  {
+   "project": "screen",
+   "type": "gnu",
+   "urlbase": "screen",
+   "version": "4.5.1"
+  },
+  {
+   "project": "sox",
+   "type": "sourceforge",
+   "urlbase": "sox/sox",
+   "version": "14.4.2"
+  },
+  {
+   "project": "squashfs-tools",
+   "type": "sourceforge",
+   "urlbase": "squashfs/squashfs",
+   "version": "4.3"
+  },
+  {
+   "project": "sudo",
+   "type": "generic",
+   "urlbase": "sudo",
+   "version": "1.8.20p2"
+  },
+  {
+   "project": "sysstat",
+   "type": "github",
+   "urlbase": "sysstat/sysstat",
+   "version": "11.2.1.1"
+  },
+  {
+   "project": "terminus-font",
+   "type": "sourceforge",
+   "urlbase": "terminus-font/terminus-font",
+   "version": "4.40"
+  },
+  {
+   "project": "texinfo",
+   "type": "gnu",
+   "urlbase": "texinfo",
+   "version": "6.3"
+  },
+  {
+   "project": "tmux",
+   "type": "github",
+   "urlbase": "tmux/tmux",
+   "version": "2.4"
+  },
+  {
+   "project": "usbmuxd",
+   "type": "github",
+   "urlbase": "libimobiledevice/usbmuxd",
+   "version": "1.1.0"
+  },
+  {
+   "project": "vim",
+   "type": "github",
+   "urlbase": "vim/vim",
+   "version": "8.0.0600"
+  },
+  {
+   "project": "vorbis-tools",
+   "type": "xiph",
+   "urlbase": "vorbis-tools",
+   "version": "1.4.0"
+  },
+  {
+   "project": "xfsdump",
+   "type": "sgi",
+   "urlbase": "xfsdump",
+   "version": "3.1.6"
+  },
+  {
+   "project": "zsh",
+   "type": "sourceforge",
+   "urlbase": "zsh/zsh",
+   "version": "5.3.1"
+  },
+  {
+   "project": "workbone",
+   "type": "http",
+   "urlbase": "workbone",
+   "version": "2.40"
+  },
+  {
+   "project": "sqlite",
+   "type": "generic",
+   "urlbase": "sqlite",
+   "version": "3190300"
+  },
+  {
+   "project": "cups-filters",
+   "type": "generic",
+   "urlbase": "cups-filters",
+   "version": "1.13.5"
+  },
+  {
+   "project": "mariadb",
+   "type": "generic",
+   "urlbase": "mariadb",
+   "version": "10.0.30"
+  },
+  {
+   "project": "moc",
+   "type": "generic",
+   "urlbase": "moc",
+   "version": "2.5.2"
+  },
+  {
+   "project": "vbetool",
+   "type": "freedesktop",
+   "urlbase": "vbetool",
+   "version": "1.2.2"
+  },
+  {
+   "project": "ksh93",
+   "type": "generic",
+   "urlbase": "ksh93",
+   "version": "2012-08-01"
+  },
+  {
+   "project": "jove",
+   "type": "generic",
+   "urlbase": "jove",
+   "version": "4.16.0.73"
+  },
+  {
+   "project": "jed",
+   "type": "http",
+   "urlbase": "jed",
+   "version": "0.99-19"
+  },
+  {
+   "project": "powertop",
+   "type": "generic",
+   "urlbase": "powertop",
+   "version": "2.8"
+  },
+  {
+   "project": "bc",
+   "type": "gnu",
+   "urlbase": "bc",
+   "version": "1.07.1"
+  },
+  {
+   "project": "ddrescue",
+   "type": "gnu",
+   "urlbase": "ddrescue",
+   "version": "1.22"
+  },
+  {
+   "project": "seejpeg",
+   "type": "ibiblio",
+   "urlbase": "seejpeg",
+   "version": "1.10"
+  },
+  {
+   "project": "sc",
+   "type": "ibiblio",
+   "urlbase": "sc",
+   "version": "7.16"
+  },
+  {
+   "project": "ghostscript",
+   "type": "generic",
+   "urlbase": "ghostscript",
+   "version": "9.20"
+  },
+  {
+   "project": "ispell",
+   "type": "generic",
+   "urlbase": "ispell",
+   "version": "3.4.00"
+  },
+  {
+   "project": "libx86",
+   "type": "generic",
+   "urlbase": "libx86",
+   "version": "1.1"
+  },
+  {
+   "project": "soma",
+   "type": "http",
+   "urlbase": "soma",
+   "version": "2.10.4"
+  },
+  {
+   "project": "itstool",
+   "type": "http",
+   "urlbase": "itstool",
+   "version": "2.0.2"
+  },
+  {
+   "project": "dvd+rw-tools",
+   "type": "http",
+   "urlbase": "dvd+rw-tools",
+   "version": "7.1"
+  },
+  {
+   "project": "lsof",
+   "type": "mirrorservice",
+   "urlbase": "lsof",
+   "version": "4.89"
+  }
+ ]
+}
