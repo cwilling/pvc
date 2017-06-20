@@ -76,9 +76,11 @@ var check = function (parent, options) {
       } // switch //
     }.bind(parent)); // reponse.on //
   }.bind(parent));   // https.get //
+
   req.on('error', function(e) {
-    console.log("Error in check() sourceforge https.get: " + e.message);
-  });
+    console.log("(" + parent.project + ":" + parent.type + ":" + parent.urlbase + ") Error: " + e.message);
+    eventEmitter.emit('CheckedWatcher', parent, void 0);
+  }.bind(parent));
 
 }
 

@@ -92,48 +92,49 @@ function requestTagData (projectId, requestOptions, reportCallback) {
   var nextUrl = {};
 
   var req = https.get(requestOptions, function(response) {
-  pvcDebug("Status code: " + response.statusCode);
-  pvcDebug("Header: " + JSON.stringify(response.headers));
-  pvcDebug("Header: " + response.headers.link);
-  if (response.headers.link) {
-    var links = parse_link_header(response.headers.link);
-    pvcDebug("links: " + JSON.stringify(links));
-    pvcDebug("Object.keys = " + Object.keys(links));
-    if (links.hasOwnProperty('next')) {
-      pvcDebug("Next page is: " + links.next);
-      nextUrl = url.parse(links.next);
-      pvcDebug("and path will be: " + nextUrl.path);
-    }
-  }
-
-  // handle the response
-  var res_data = '';
-  response.on('data', function(chunk) {
-    pvcDebug(".....chunk");
-    res_data += chunk;
-  });
-
-  response.on('end', function() {
-    pvcDebug(res_data);
-    var page_data = JSON.parse(res_data);
-    versions = [];
-    if (page_data) {
-      for (var i=0;i<page_data.length;i++) {
-        var extracted = extractVersionId(projectId, page_data[i].name);
-        if (extracted != undefined ) {
-          pvcDebug("Extracted version is: " + extractVersionId(projectId, page_data[i].name));
-          versions.push(extracted);
-        }
+    pvcDebug("Status code: " + response.statusCode);
+    pvcDebug("Header: " + JSON.stringify(response.headers));
+    pvcDebug("Header: " + response.headers.link);
+    if (response.headers.link) {
+      var links = parse_link_header(response.headers.link);
+      pvcDebug("links: " + JSON.stringify(links));
+      pvcDebug("Object.keys = " + Object.keys(links));
+      if (links.hasOwnProperty('next')) {
+        pvcDebug("Next page is: " + links.next);
+        nextUrl = url.parse(links.next);
+        pvcDebug("and path will be: " + nextUrl.path);
       }
     }
-    pvcDebug("and path will be: " + nextUrl.path);
-    reportCallback(versions, nextUrl);
-  });
 
-  });
+    // handle the response
+    var res_data = '';
+    response.on('data', function(chunk) {
+      pvcDebug(".....chunk");
+      res_data += chunk;
+    });
 
-  req.on('error', function(e) {
-  console.log("Got error: " + e.message);
+    response.on('end', function() {
+      pvcDebug(res_data);
+      var page_data = JSON.parse(res_data);
+      versions = [];
+      if (page_data) {
+        for (var i=0;i<page_data.length;i++) {
+          var extracted = extractVersionId(projectId, page_data[i].name);
+          if (extracted != undefined ) {
+            pvcDebug("Extracted version is: " + extractVersionId(projectId, page_data[i].name));
+            versions.push(extracted);
+          }
+        }
+      }
+      pvcDebug("and path will be: " + nextUrl.path);
+      reportCallback(versions, nextUrl);
+    });
+
+    response.on('error', function(e) {
+      console.log("(github) Error: " + e.message);
+      eventEmitter.emit('CheckedWatcher', parent, void 0);
+    });
+
   });
 
 }

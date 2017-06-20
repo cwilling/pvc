@@ -91,9 +91,11 @@ var check = function (parent, options) {
       }
     }.bind(parent));
   }.bind(parent));
+
   req.on('error', function(e) {
-    console.log("Got error: " + e.message);
-  });
+    console.log("(" + parent.project + ":" + parent.type + ":" + parent.urlbase + ") Error: " + e.message);
+    eventEmitter.emit('CheckedWatcher', parent, void 0);
+  }.bind(parent));
 }
 
 function extractVersionId(projectId, rawVersion) {

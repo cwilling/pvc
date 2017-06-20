@@ -72,9 +72,11 @@ var check = function (parent, options) {
 
     }.bind(parent)); // response.on //
   }.bind(parent));   // https.get //
+
   req.on('error', function(e) {
-    console.log("Error in check() vtk https.get: " + e.message);
-  });
+    console.log("(" + parent.project + ":" + parent.type + ":" + parent.urlbase + ") Error: " + e.message);
+    eventEmitter.emit('CheckedWatcher', parent, void 0);
+  }.bind(parent));
 
 }
 
