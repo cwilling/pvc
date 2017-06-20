@@ -168,17 +168,19 @@ function pvcLoadConfiguration () {
   //pvcDebug("Loading saved configuration");
   fs.readFile(pvcConfigFile, "utf8", function (err, data) {
     //pvcDebug("Open file: " + pvcConfigDir);
+    var obj = {};
     if (err) {
       if (err.code == "ENOENT") {
-        console.log("Had ENOENT: empty configuration");
+        // Empty configuration is OK - we'll load defaults below
+        pvcDebug("Had ENOENT: empty configuration");
       } else {
+        // Report this error but try to continue
         console.log("ERROR reading file: " + err);
       }
-      eventEmitter.emit("config_ready", {});
-      return;
+    } else {
+      //pvcDebug("pvcLoadConfiguration");
+      obj = JSON.parse(data)
     }
-    //pvcDebug("pvcLoadConfiguration");
-    var obj = JSON.parse(data)
 
     // Add "global" definitions
     obj["pvcLocalDir"] = pvcLocalDir;
