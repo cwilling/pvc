@@ -2,12 +2,15 @@
 
 const events = require('events');
 const fs = require('fs')
+const mkdirp = require('mkdirp');
 const os = require('os');
 const program = require('commander');
 
 /* pvcLocalDir is global, for use in pvcWatcher.js
 */
 pvcLocalDir = os.homedir() + '/.local/share/pvc';
+mkdirp.sync(pvcLocalDir);
+
 const Watcher = require("./pvcWatcher");
 
 const pvcCommands = ["add", "delete", "show", "list", "check", "update", "config"];
