@@ -7,6 +7,7 @@ PVC_PLUGIN_FILES = \
 	plugins/pvcWatcher-freedesktop.js \
 	plugins/pvcWatcher-generic.js \
 	plugins/pvcWatcher-github.js \
+	plugins/pvcWatcher-ghcommits.js \
 	plugins/pvcWatcher-gnu.js \
 	plugins/pvcWatcher-hackage.js \
 	plugins/pvcWatcher-http.js \
