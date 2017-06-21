@@ -22,6 +22,7 @@ PVC_PLUGIN_FILES = \
 	plugins/pvcWatcher-sbdirectlinks.js \
 	plugins/pvcWatcher-sgi.js \
 	plugins/pvcWatcher-sourceforge.js \
+	plugins/pvcWatcher-videolan.js \
 	plugins/pvcWatcher-xiph.js
 
 PVC_EXTRA_FILES = \
