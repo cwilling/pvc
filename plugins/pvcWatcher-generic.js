@@ -55,6 +55,10 @@ var check = function (parent, options) {
       host = 'www.sudo.ws';
       reqpath = 'sudo/download.html';
       break;
+    case 'vtk':
+      host = 'www.vtk.org';
+      reqpath = 'download/';
+      break;
     default:
       console.log("Unhandled software (" + parent.urlbase + ") at generic module.");
       process.exit(5);
@@ -209,6 +213,18 @@ function extractVersionId(projectId, rawVersion) {
         return matched[0].replace(replaceMe, "");
       }
       break;
+    case 'vtk':
+      var version;
+      if (rawVersion.search(/latest release \(/) > 0) {
+        pvcDebug("Found " + rawVersion);
+        var start = rawVersion.indexOf('(');
+        var end = rawVersion.indexOf(')');
+        version = rawVersion.slice(start+1, end);
+        pvcDebug("version = " + version);
+        return version;
+      }
+      break;
+
     default:
       // Allow only numeric version strings (no trailing rc1 etc.)
       var head = new RegExp('>' + projectId + '-', "");

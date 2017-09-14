@@ -36,10 +36,6 @@ var check = function (parent, options) {
       host = 'faculty.cse.tamu.edu';
       reqpath = '/davis/SuiteSparse/';
       break;
-    case 'vtk':
-      host = 'www.vtk.org';
-      reqpath = 'download/';
-      break;
     case 'workbone':
       host = 'archive.debian.org';
       reqpath = 'debian-archive/debian/dists/Debian-2.2/main/source/sound/';
@@ -159,17 +155,6 @@ switch (projectId) {
         pvcDebug("matched: " + matched[0]);
         //return matched[0].replace("SuiteSparse-", "").replace(".tar", "");
         return matched[0].replace(/^SuiteSparse-|\.tar$/g, "");
-      }
-      break;
-    case 'vtk':
-      var version;
-      if (rawVersion.search(/latest release \(/) > 0) {
-        pvcDebug("Found " + rawVersion);
-        var start = rawVersion.indexOf('(');
-        var end = rawVersion.indexOf(')');
-        version = rawVersion.slice(start+1, end);
-        pvcDebug("version = " + version);
-        return version;
       }
       break;
     case 'workbone':
