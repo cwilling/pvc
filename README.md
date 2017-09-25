@@ -1,7 +1,7 @@
 This branch contains the files needed to generate a PVC package, suitable for installation into a Slackware Linux operating system.
 
 It is assumed that you have either:
-1. cloned the PVC repo from Gihub and checked out the _slackbuild_ branch
+1. cloned the PVC repo from Github and checked out the _slackbuild_ branch
 2. downloaded the pvc.slackbuild.tar.gz from the _Releases_ page of the PVC Github repository and unpacked it (`tar xf pvc.slackbuild.tar.gz`)
 
 You should therefore have this README.md in your current directory, as well as another directory named pvc.slackbuild. Change directory into the pvc.slackbuild directory where there should be four files including _pvc.info_. Use the DOWNLOAD url in _pvc.info_ to download the correct source tarball, something (depending on the version) like:
