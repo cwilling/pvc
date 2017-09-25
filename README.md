@@ -103,7 +103,5 @@ In case of problems, all commands accept a -d | --debug option to output additio
 ```
 
 
-#### Dependencies
-*PVC* requires node.js to run.
-It also requires the [commander](https://www.npmjs.com/package/commander), [ftp](https://www.npmjs.com/package/ftp), [tar.gz](https://www.npmjs.com/package/tar.gz) and [request](https://www.npmjs.com/package/request) modules. These modules can be installed for *PVC* by running the command *npm install* from the *PVC* directory:
-
+#### Installation
+See Installation instructions at https://cwilling.github.io/pvc/
