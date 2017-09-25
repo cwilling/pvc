@@ -11,4 +11,10 @@ _**What's so good about the plugin system?**_ Different repository types (github
 
 Of course any new module files for repository types that might be widely used are welcome to be contributed for inclusion as one of _PVC_'s built in modules. A pull request would be a good mechanism for this sort of contribution. For more details about supporting new repository types, see the [module tutorial](ModuleTutorial.md)
 
+_**Installation.**_
+_PVC_ is a Node.js based application so install that first.
+
+_PVC_ can be run directly from either the directory which is created when the download tarball is unpacked or from the directory created when cloning the _pvc_ Github repository. However it is generally more convenient to do a system wide installation as follows: change to the unpacked tarball or clone directory and run `sudo make install` (or plain `make install` if already running as root). 
+
+If you really want to just run _pvc_ privately (from tarball or clone directory), cd to that directory and run `make nodeModules`. To then run _pvc_, you'll always have to cd to that directory and reference the _pvc_ executable in that directory using the dot-slash notation i.e. `./pvc [options] [command]`
 
