@@ -5,6 +5,7 @@ const fs = require('fs')
 const mkdirp = require('mkdirp');
 const os = require('os');
 const program = require('commander');
+const pvc_version = '@PVC_VERSION@';
 
 /* pvcLocalDir is global, for use in pvcWatcher.js
 */
@@ -215,9 +216,37 @@ function pvcSaveConfiguration (config) {
   });
 }
 
+
+/* A system wide installation will have inserted the version number
+  as var pvc_version, replacing @PVC_VERSION@ above.
+
+  Otherwise (@PVC_VERSION@ hasn't been replaced), we must be running
+  a "local" installation so try using the version number embedded in
+  the man page in this directory. Not ideal but something.
+*/
+var pvcVersion = function () {
+  var v = pvc_version; 
+  if (v.search(/@.*@/) > -1 ) {
+    //console.log("NO VERSION NUMBER!");
+    try {
+      var data = fs.readFileSync('./pvc.1', 'utf8');
+    }
+    catch (err) {
+      return v;
+    }
+    var matched = data.match(/Version [0-9][0-9.]*/);
+    if (matched) {
+      return matched[0].replace(/Version /, "");
+    }
+    return v;
+  }
+  return v;
+};
+
 /* Commands & options
 */
 program.option('-d, --debug', 'Additional debugging output')
+  .option('-v, --version', 'Show PVC version')
   .option('-w, --watchlist <name>', 'Use alternate watch list')
   .action(function (cmd) {
      cmdValue = cmd;
@@ -427,7 +456,7 @@ program.command("config")
       // but don't just show everything in case anything sensitive (passwords, auth keys)
       //pvcDebug("XXXX pvcConfig: " + JSON.stringify(pvcConfig,null,1));
       //console.log("PVC - Project Version Checker \u00A9Copyright 2017 Christoph Willing");
-      console.log("PVC - Project Version Checker");
+      console.log("PVC - Project Version Checker (" + pvcVersion() + ")");
       console.log("       watched projects file: " + pvcConfig["pvcWatchListFile"]);
       console.log("     user configuration file: " + pvcConfig["pvcConfigFile"]);
       console.log("   available retrieval types: " + pvcRetrievalTypes);
@@ -449,6 +478,9 @@ function parseCommand () {
     }
     pvcDebug("DEBUGGING mode");
     program.parse(process.argv);
+  } else if (process.argv.indexOf("-v") > 1 || process.argv.indexOf("--version") > 1) {
+    console.log("PVC version " + pvcVersion());
+    process.exit(0);
   } else {
     pvcDebug("Unknown command (" + process.argv[2] + ")");
     program.help();
