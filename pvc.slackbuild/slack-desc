@@ -1,0 +1,19 @@
+# HOW TO EDIT THIS FILE:
+# The "handy ruler" below makes it easier to edit a package description.
+# Line up the first '|' above the ':' following the base package name, and
+# the '|' on the right side marks the last column you can put a character in.
+# You must make exactly 11 lines for the formatting to be correct.  It's also
+# customary to leave one space after the ':' except on otherwise blank lines.
+
+     |-----handy-ruler------------------------------------------------------|
+pvc: pvc (Project Version Checker)
+pvc:
+pvc: PVC is a command line driven asynchronous Project Version Checker.
+pvc:
+pvc: It enables checking of the latest versions of various software projects
+pvc: that may be held at different repositories e.g. github, sourceforge,
+pvc: pypi, metacpan, etc. In addition to support of a range of such common
+pvc: public repositories, support for additional repos may be added
+pvc: by the user via a plugin system.
+pvc:
+pvc:
