@@ -4,9 +4,9 @@ It's presumed you are reading this INSTALL file after
 cloning the GitHub project or unpacking a release tarball
 and changing into the resulting directory.
 
-To run PVC as an ordinary user without a system wide installation,
+To run PVC as an ordinary user _without_ a system wide installation,
 first run:
-	npm install
+	make nodeModules
 which will create a directory named "node_modules" and download some
 nodejs modules into it.
 
