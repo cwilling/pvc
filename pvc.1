@@ -1,4 +1,4 @@
-.TH pvc 1 "Thu 14 Sep, 2017" "Version 0.7.5"
+.TH pvc 1 "Mon 25 Sep, 2017" "Version 0.7.6"
 .SH NAME
 pvc - Program Version Checker
 
@@ -58,7 +58,7 @@ command compares the locally held version strings of watched projects with their
 .P
 The
 .B update
-command updates the local version string of a project. If a particular version has been specidied (using the --version option) then this is used for the update. However if no version has been specified, the remote repository is queried and the resulting version is used for the update.
+command updates the local version string of a project. If a particular version has been specified (using the --version option) then this is used for the update. However if no version has been specified, the remote repository is queried and the resulting version is used for the update.
 
 .P
 The
@@ -137,6 +137,8 @@ is the location of the "Watcher" files for the default repository types.
 is a directory for additional material, including the template for user defined "Watcher" files.
 
 .SH EXAMPLES
+.IP "pvc -V (or pvc --Version)"
+displays the version of the pvc being used
 .IP "pvc add -p hoorex -t github -u cwilling/hoorex"
 adds hoorex project from GitHub
 .IP "pvc check --project hoorex"

@@ -246,7 +246,7 @@ var pvcVersion = function () {
 /* Commands & options
 */
 program.option('-d, --debug', 'Additional debugging output')
-  .option('-v, --version', 'Show PVC version')
+  .option('-V, --Version', 'Show PVC version')
   .option('-w, --watchlist <name>', 'Use alternate watch list')
   .action(function (cmd) {
      cmdValue = cmd;
@@ -478,7 +478,7 @@ function parseCommand () {
     }
     pvcDebug("DEBUGGING mode");
     program.parse(process.argv);
-  } else if (process.argv.indexOf("-v") > 1 || process.argv.indexOf("--version") > 1) {
+  } else if (process.argv.indexOf("-V") > 1 || process.argv.indexOf("--Version") > 1) {
     console.log("PVC version " + pvcVersion());
     process.exit(0);
   } else {
