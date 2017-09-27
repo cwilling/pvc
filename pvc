@@ -226,7 +226,7 @@ function pvcSaveConfiguration (config) {
 */
 var pvcVersion = function () {
   var v = pvc_version; 
-  if (v.search(/@.*@/) > -1 || pvc.length == 0) {
+  if (v.search(/@.*@/) > -1 || v.length == 0) {
     //console.log("NO VERSION NUMBER!");
     try {
       var data = fs.readFileSync('./pvc.1', 'utf8');
