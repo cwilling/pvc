@@ -232,7 +232,7 @@ function pvcSaveConfiguration (config) {
 */
 var pvcVersion = function () {
   try {
-    var read = fs.createReadStream('/sr/man/man1/pvc.1.gz');
+    var read = fs.createReadStream('/usr/man/man1/pvc.1.gz');
     var gunzip = zlib.createGunzip();
     var lines = [];
 
