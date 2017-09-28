@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 
 const events = require('events');
+const zlib = require('zlib');
 const fs = require('fs')
 const mkdirp = require('mkdirp');
 const os = require('os');
 const program = require('commander');
-const pvc_version = '@PVC_VERSION@';
+
+var pvc_version = '';
 
 /* pvcLocalDir is global, for use in pvcWatcher.js
 */
@@ -80,6 +82,14 @@ eventEmitter.on('IsValidWatcher', function (newWatcher) {
 eventEmitter.on('NotValidWatcher', function (newWatcher) {
   //pvcDebug("- error  validating new watcher. Exiting now", 'PVC_ERROR'); 
   process.exit(2);
+});
+
+eventEmitter.on('have_version', function (version) {
+  if (version.length > 0) {
+    //console.log("PVC version " + version);
+    pvc_version = version;
+    //process.exit(0);
+  }
 });
 
 eventEmitter.on('setup_ready', parseCommand );
@@ -217,31 +227,32 @@ function pvcSaveConfiguration (config) {
 }
 
 
-/* A system wide installation will have inserted the version number
-  as var pvc_version, replacing @PVC_VERSION@ above.
-
-  Otherwise (@PVC_VERSION@ hasn't been replaced), we must be running
-  a "local" installation so try using the version number embedded in
-  the man page in this directory. Not ideal but something.
+/*
+  Extract the version number embedded in the man page.
 */
 var pvcVersion = function () {
-  var v = pvc_version; 
-  if (v.search(/@.*@/) > -1 || v.length == 0) {
-    //console.log("NO VERSION NUMBER!");
-    try {
-      var data = fs.readFileSync('./pvc.1', 'utf8');
-    }
-    catch (err) {
-      return v;
-    }
-    var matched = data.match(/Version [0-9][0-9.]*/);
-    if (matched) {
-      return matched[0].replace(/Version /, "");
-    }
-    return v;
+  try {
+    var read = fs.createReadStream('/sr/man/man1/pvc.1.gz');
+    var gunzip = zlib.createGunzip();
+    var lines = [];
+
+    gunzip.on('data', function(chunk) {
+      lines.push(chunk);
+    });
+    gunzip.on("end", function(chunk) {
+      var matched = lines[0].toString().match(/Version [0-9][0-9.]*/);
+      if (matched) {
+        eventEmitter.emit("have_version", matched[0].replace(/Version /, ""));
+      }
+    })
+    read.pipe(gunzip);
   }
-  return v;
+  catch (err) {
+    eventEmitter.emit("have_version", "Check man page for pvc version");
+    console.log("ERROR: " + err);
+  }
 };
+pvcVersion();
 
 /* Commands & options
 */
@@ -456,7 +467,7 @@ program.command("config")
       // but don't just show everything in case anything sensitive (passwords, auth keys)
       //pvcDebug("XXXX pvcConfig: " + JSON.stringify(pvcConfig,null,1));
       //console.log("PVC - Project Version Checker \u00A9Copyright 2017 Christoph Willing");
-      console.log("PVC - Project Version Checker (" + pvcVersion() + ")");
+      console.log("PVC - Project Version Checker (" + pvc_version + ")");
       console.log("       watched projects file: " + pvcConfig["pvcWatchListFile"]);
       console.log("     user configuration file: " + pvcConfig["pvcConfigFile"]);
       console.log("   available retrieval types: " + pvcRetrievalTypes);
@@ -479,7 +490,7 @@ function parseCommand () {
     pvcDebug("DEBUGGING mode");
     program.parse(process.argv);
   } else if (process.argv.indexOf("-V") > 1 || process.argv.indexOf("--Version") > 1) {
-    console.log("PVC version " + pvcVersion());
+    console.log("PVC version " + pvc_version);
     process.exit(0);
   } else {
     pvcDebug("Unknown command (" + process.argv[2] + ")");

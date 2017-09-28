@@ -41,7 +41,6 @@ install: nodeModules $(PVC_FILES) pvc.1 pvc-wrapper
 	cp -a $(PVC_FILES) node_modules $(DESTDIR)$(INSTALL_DIR)
 	cp -a $(PVC_PLUGIN_FILES) $(DESTDIR)$(INSTALL_DIR)/plugins
 	cp -a $(PVC_EXTRA_FILES) $(DESTDIR)$(INSTALL_DIR)/extra
-	sed -i -e 's/@PVC_VERSION@/$(PVC_VERSION)/' $(DESTDIR)$(INSTALL_DIR)/pvc
 	sed -e "s:%INSTALL_DIR%:$(INSTALL_DIR):" pvc-wrapper >$(DESTDIR)/usr/bin/pvc
 	chmod a+x $(DESTDIR)/usr/bin/pvc
 	mkdir -p $(DESTDIR)/usr/man/man1
