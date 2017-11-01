@@ -9,7 +9,7 @@ var check = function (parent, options) {
 
 
   // https request
-  var reqpath = 'release/';
+  var reqpath = 'release/current/';
 
   var requestOptions = {
     headers: {
@@ -34,10 +34,10 @@ var check = function (parent, options) {
 
       for (var i=0;i<res_data.length;i++) {
         //console.log(res_data[i]);
-        var matched = res_data[i].match(/>[0-9][0-9.]*\//);
+        var matched = res_data[i].match(/-[0-9][0-9.]*\.tar\.xz/);
         if (matched) {
           //console.log("matched = " + matched[0]);
-          versions.push(matched[0].replace(/^>|\/$/g,""));
+          versions.push(matched[0].replace(/^-|\.tar\.xz/g,""));
         }
       }
       versions.sort( function(a,b) { return naturalCompare(b, a); });
