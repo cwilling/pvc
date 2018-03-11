@@ -64,5 +64,8 @@ uninstall:
 	rm $(DESTDIR)/usr/bin/pvc
 	rm $(DESTDIR)/usr/man/man1/pvc.1*
 
+clean:
+	@rm -f pvc.1 op
+
 .PHONY:	man nodeModules install uninstall
 
