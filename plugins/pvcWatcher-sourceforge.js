@@ -16,6 +16,9 @@ var check = function (parent, options) {
       case 'terminus-font':
         reqpath = 'projects/' + acc + '/files/';
         break
+      case 'opencore-amr':
+        reqpath = 'projects/' + acc + '/files/opencore-amr/';
+        break
       case 'joe':
         reqpath = 'projects/joe-editor/files/JOE%20sources/';
         break
@@ -44,7 +47,7 @@ var check = function (parent, options) {
     // handle the response
     var res_data = '';
     response.on('data', function(chunk) {
-      pvcDebug(".....chunk");
+      //pvcDebug(".....chunk");
       res_data += chunk;
     });
     response.on('end', function() {
