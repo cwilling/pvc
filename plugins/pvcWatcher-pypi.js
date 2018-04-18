@@ -17,7 +17,7 @@ var check = function (parent, options) {
     headers: {
       'User-Agent': 'pvc: Project Version Checker'
     },
-    host: 'pypi.python.org',
+    host: 'pypi.org',
     port: 443,
     path: '/' + reqpath
   };
