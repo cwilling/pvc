@@ -1,6 +1,6 @@
 {
   "name": "pvc",
-  "version": "0.7.8",
+  "version": "0.7.9",
   "description": "Project Version Checker",
   "main": "pvc",
   "dependencies": {

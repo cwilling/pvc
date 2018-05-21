@@ -199,6 +199,13 @@ function extractVersionId(projectId, rawVersion) {
         return words[2].split()[1];
       }
       break;
+    case 'DCMTK/dcmtk':
+      pvcDebug("Quirking version string " + rawVersion + " for project: " + projectId);
+      /* The repo also contains some CAR[0-9] tarballs that we must disregard */
+      if (rawVersion.search(/^DCMTK-[0-9.]*$/) == 0 ) {
+        return rawVersion.replace(/^[^0-9]*|-.*$/g, "");
+      }
+      break;
     case 'OpenImageIO/oiio':
       pvcDebug("Quirking version string " + rawVersion + " for project: " + projectId);
       if (rawVersion.search(/^Release-[0-9.]*$/) == 0 ) {
