@@ -28,6 +28,10 @@ var check = function (parent, options) {
       host = 'www.jedsoft.org';
       reqpath = 'releases/' + parent.urlbase + '/';
       break;
+    case 'PyGreSQL':
+      host = 'www.pygresql.org';
+      reqpath = 'files/';
+      break;
     case 'soma':
       host = 'www.dawoodfall.net';
       reqpath = 'slackbuilds/noversion/soma/';
@@ -139,6 +143,7 @@ switch (projectId) {
       break;
     case 'jed':
     case 'most':
+    case 'PyGreSQL':
       //console.log(res_data[i]);
       var head = new RegExp(projectId + '-', "");
       var findMe = new RegExp(head.source + '[0-9][0-9.-]*.\\.tar\\.[bglx]z2*', "");
