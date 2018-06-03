@@ -168,7 +168,7 @@ For repositories which paginate results with large entries, e.g. vim/vim at GitH
 Repology (https://repology.org) for a web based approach for tracking built packages, rather than source code releases.
 
 .SH BUGS
-Please report any bugs to the author at
+Please report any bugs to the author at:
 .B "https://github.com/cwilling/pvc/issues"
 
 .SH AUTHOR
